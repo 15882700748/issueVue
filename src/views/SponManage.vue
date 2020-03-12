@@ -27,13 +27,13 @@
             </el-row>
         </el-header>
         <el-main>
-            <SponInfoCardComp v-for="item in tableData " :data="item" :allItem="tableData" @newAllItem="getNewAllItem">
+            <SponInfoCardComp  v-for="item in tableData " :ruleForm="ruleForm" :isLast="isLast" :data="item" :currentPage="currentPage" :allItem="tableData" @newAllItem="getNewAllItem">
             </SponInfoCardComp>
             <div class="addInfo" v-if="isLast">
                 <i id="addIcon" class="el-icon-plus avatar-uploader-icon" @click="showDialog"></i>
             </div>
             <el-dialog title="新增赞助商" :visible.sync="dialogFormVisible" :close-on-click-modal="!dialogFormVisible"
-                       width="30%" center="true"  @closed="addSponHandleOnClose('addSponForm')" >
+                       width="30%" center  @closed="addSponHandleOnClose('addSponForm')" >
                 <el-form :model="addSponForm" :rules="addSponFormRule" ref="addSponForm">
                     <el-form-item prop="logoUrl">
                         <el-row>
@@ -44,7 +44,7 @@
                                         :show-file-list="false"
                                         :on-success="addSponHandleSuccess"
                                         :before-upload="addSponHandleBeforeUpload"
-                                        auto-upload="false">
+                                        :auto-upload="autoUpload">
                                     <div slot="file" slot-scope="{file}">
                                         <img v-if="file.url" :src="file.url" class="avatar">
                                         <i v-else class="el-icon-plus avatar-icon"></i>
@@ -88,7 +88,7 @@
         },
         data() {
             return {
-                pageSize:1,
+                pageSize:2,
                 total:1,
                 currentPage:0,
                 condition:null,
@@ -99,9 +99,7 @@
                     select:'sponName'
                 },
                 rules:{
-                    content: [
-                        {required: true, message: '请输入内容', trigger: 'onSubmit'},
-                    ]
+
                 },
                 dialogFormVisible:false,
                 addSponForm:{
@@ -112,10 +110,12 @@
                 addSponFormRule:{
                     sponName:[{required: true, message: '请输入赞助商名', trigger: 'onSubmit'}],
                     site:[{required: true, message: '请输入网站', trigger: 'onSubmit'}],
-                    logoUrl:[{required: true, message: '选择图标', trigger: 'onSubmit'}]
+                    // logoUrl:[{required: true, message: '选择图标', trigger: 'onSubmit'}]
                 },
+                autoUpload:false,
                 isLast:false,
-                uploadSuccess:true
+                uploadSuccess:true,
+                conditionSearch:false,
             }
         },
         methods: {
@@ -128,17 +128,15 @@
             },
             page(currentPage,pageSize=2){
                 const _this = this
-                axios.post("/spon/page?pageNo="+(currentPage)+"&pageSize="+pageSize).then(function(resp){
+                axios.post("/spon/page?pageNo="+(currentPage)+"&pageSize="+pageSize+"&"+this.ruleForm.select+"="+this.ruleForm.content).then(function(resp){
                     _this.tableData = resp.data.records
                     for(let i=0; i<resp.data.records.length;i++){
                         _this.tableData[i].logoUrl= axios.defaults.baseURL+'sponIcon/'+_this.tableData[i].logoUrl
                     }
-                    console.log(resp)
                     _this.pageSize =resp.data.size
                     _this.total = resp.data.total
                     _this.currentPage = resp.data.current
                     _this.isLastPage(resp.data.size,resp.data.current,resp.data.pages,_this.tableData.length)
-                    console.log(_this.isLast)
                 })
             },
             handleClick(row) {
@@ -176,14 +174,11 @@
                     let formData = {}
                     formData[this.ruleForm.select] = this.ruleForm.content
                     this.condition = formData
-                    if (valid) {
-                        //submit file
-                        _this.$refs.upload.submit();
-                        formData.logoUrl = ''
-                    } else {
-                        console.log('error submit!!');
-                        return false;
-                    }
+                    this.page(0,2);
+                    _this.$message({
+                        message:'搜索成功',
+                        type:'success'
+                    })
                 });
             },
             showDialog(){
@@ -213,9 +208,27 @@
                     if (valid) {
                         //submit file
                         _this.$refs.upload.submit();
+                        _this.addSponForm.logoUrl = '16christine-zhu-1460573-unsplash.jpg'
                         if(this.uploadSuccess){
                             axios.post('/spon/AddSpon',_this.addSponForm).then(function (resp) {
-                                console.log(resp)
+                                if(resp.data.code === "200"){
+                                    _this.dialogFormVisible = false
+                                    let curPage = _this.currentPage
+                                    if(_this.isLast && _this.tableData.length === _this.pageSize){
+                                        curPage += 1;
+                                    }
+                                    _this.page(curPage,2)
+                                    _this.$message({
+                                        message:resp.data.msg,
+                                        type:'success'
+                                    })
+                                }else{
+                                    _this.$message({
+                                        message:resp.data.msg,
+                                        type:'error'
+                                    })
+                                }
+
                             })
                         }else{
                             _this.$message({
@@ -238,7 +251,7 @@
         },
         created(){
             const _this = this
-            axios.post("/spon/page?pageNo=0&pageSize=2").then(function(resp){
+            axios.post("/spon/page?pageNo=0&pageSize=2"+"&"+this.ruleForm.select+"="+this.ruleForm.content).then(function(resp){
                 _this.tableData = resp.data.records
                 for(let i=0; i<resp.data.records.length;i++){
                     _this.tableData[i].logoUrl= axios.defaults.baseURL+'sponIcon/'+_this.tableData[i].logoUrl

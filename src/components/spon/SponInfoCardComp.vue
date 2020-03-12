@@ -41,7 +41,7 @@
 <script>
     export default {
         name: "SponInfoCardComp",
-        props:['data','allItem'],
+        props:['data','allItem','currentPage','isLast','ruleForm'],
         data(){
             return{
                 cardData:{},
@@ -58,6 +58,16 @@
 
         },
         methods:{
+            page(currentPage,pageSize=2){
+                const _this = this
+                axios.post("/spon/page?pageNo="+(currentPage)+"&pageSize="+pageSize+"&"+this.ruleForm.select+"="+this.ruleForm.content).then(function(resp){
+                    _this.allItem = resp.data.records
+                    for(let i=0; i<resp.data.records.length;i++){
+                        _this.allItem[i].logoUrl= axios.defaults.baseURL+'sponIcon/'+_this.allItem[i].logoUrl
+                    }
+                    _this.$emit(('newAllItem'),resp.data)
+                })
+            },
             handleAvatarSuccess(res, file) {
                 this.sponIcon =axios.defaults.baseURL+'sponIcon/'+ res.filePath
                 // this.sponIcon = URL.createObjectURL(file.raw);
@@ -129,20 +139,19 @@
                 }).then(() => {
                     let data ={"sponId":id}
                     axios.post("/spon/deleteOrgById",data).then(function (resp) {
-                        console.log(resp)
-                        axios.post("/spon/page?pageNo=0&pageSize=2").then(function(resp){
-                            _this.allItem = resp.data.records
-                            for(let i=0; i<resp.data.records.length;i++){
-                                _this.allItem[i].logoUrl= axios.defaults.baseURL+'sponIcon/'+_this.allItem[i].logoUrl
-                            }
-                            console.log(_this.allItem)
-                            _this.$emit(('newAllItem'),resp.data)
-                            _this.$message({
-                                type: 'success',
-                                message: '删除成功!'
-                            });
-                        })
 
+                        let curPage = _this.currentPage
+                        if(_this.isLast && _this.allItem.length === 1){
+                            curPage -= 1;
+                        }
+                        console.log(_this.isLast)
+                        console.log(curPage)
+                        console.log(_this.allItem.length)
+                        _this.page(curPage,2)
+                        _this.$message({
+                            type: 'success',
+                            message: '删除成功!'
+                        });
                     })
 
                 }).catch(() => {
