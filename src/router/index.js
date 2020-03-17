@@ -14,6 +14,8 @@ import PictureManage from '../views/PictureManage'
 import SponManage from '../views/SponManage'
 import ForgetPassword from '../views/ForgetPassword'
 import RedirectPage from  '../views/tool/redirectPage'
+import AlbumComp from '../components/picture/albumComp'
+import pictureComp from '../components/picture/pictureComp'
 Vue.use(VueRouter)
 
 const routes = [
@@ -92,7 +94,7 @@ const routes = [
         children:[
             {
                 path:'/SponManage',
-                name:'SponManage',
+                name:'赞助商管理',
                 component:SponManage,
             }
         ]
@@ -124,7 +126,20 @@ const routes = [
         children:[
             {
                 path:'/PictureManage',
-                name:'PictureManage',
+                name:'图片管理',
+                redirect:'/album',
+                children:[
+                    {
+                        path:"/album",
+                        name:"相册",
+                        component:AlbumComp
+                    },
+                    {
+                        path:"/picture",
+                        name:"图片",
+                        component:pictureComp
+                    },
+                ],
                 component:PictureManage,
             }
         ]

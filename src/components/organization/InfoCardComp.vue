@@ -51,11 +51,6 @@
                             <div class="profile-card-inf__txt">********<i class="el-icon-edit " @click="updateOrg('password','')"></i></div>
                         </div>
                     </div>
-
-                    <div class="profile-card-ctr">
-                        <button class="profile-card__button button--blue js-message-btn">Message</button>
-                        <button class="profile-card__button button--orange">Follow</button>
-                    </div>
                 </div>
 
             </div>

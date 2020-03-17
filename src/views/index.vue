@@ -1,5 +1,5 @@
 <template>
-    <div id="app">
+    <div >
         <el-container >
             <el-header >
                 <LogOutComp class="logout"></LogOutComp>
