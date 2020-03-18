@@ -46,7 +46,7 @@ const routes = [
         children:[
             {
                 path:'/ArticleConfig',
-                name:'ArticleConfig',
+                name:'文章配置',
                 component:ArticleConfig,
             }
         ]
@@ -78,7 +78,7 @@ const routes = [
         children:[
             {
                 path:'/ArticleManage',
-                name:'ArticleManage',
+                name:'文章管理',
                 component:ArticleManage,
             }
         ]

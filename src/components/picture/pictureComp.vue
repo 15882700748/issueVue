@@ -5,7 +5,7 @@
             <div class="wrapper">
                 <div class="album">
                     <el-upload
-                            action="http://localhost:8181/uploadImg"
+                            action="http://localhost:8181/uploadImgadd/1"
                             :show-file-list="false"
                             :on-success="handleAvatarSuccess"
                             :before-upload="beforeAvatarUpload">
@@ -27,22 +27,6 @@
                     </div>
                     <span class="albumName">上传日期：{{item.uploadTime}}</span>
                     <span class="albumDelete"><i class="el-icon-circle-close" style="color: red;font-size: 1.5em" @click="deleteImg(item.imgId)"></i></span>
-                    <!--<span class="albumEdit"><i class="el-icon-edit-outline" @click="editAlbum(item.albumId,item.albumName,item.albumDesc)"></i></span>-->
-                    <!--<el-dialog title="修改相册" :visible.sync="updateAlbumDialogFormVisible" :close-on-click-modal="!updateAlbumDialogFormVisible"-->
-                               <!--width="30%" center  @closed="addAlbumHandleOnClose('updateAlbumForm'+index)" >-->
-                        <!--<el-form :model="updateAlbumForm" :rules="updateAlbumFormRule" :ref="'updateAlbumForm'+index">-->
-                            <!--<el-form-item label="" prop="albumName">-->
-                                <!--<el-input v-model="updateAlbumForm.albumName" autocomplete="off" placeholder="相册名"></el-input>-->
-                            <!--</el-form-item>-->
-                            <!--<el-form-item label="" prop="albumDesc">-->
-                                <!--<el-input v-model="updateAlbumForm.albumDesc" autocomplete="off" placeholder="描述"></el-input>-->
-                            <!--</el-form-item>-->
-                        <!--</el-form>-->
-                        <!--<div slot="footer" class="dialog-footer">-->
-                            <!--<el-button @click="updateAlbumDialogFormVisible = false">取 消</el-button>-->
-                            <!--<el-button type="primary" @click="submitUpdateAlbumForm('updateAlbumForm'+index)">确 定</el-button>-->
-                        <!--</div>-->
-                    <!--</el-dialog>-->
                 </div>
             </div>
             <p v-if="loading">加载中...</p>
@@ -81,11 +65,11 @@
                 // this.imageUrl = URL.createObjectURL(file.raw);
                 const  _this =this
                 let logoUrl = res.filePath
-                axios.post("/img/addImg/"+this.albumId+"",{"imgUrl":logoUrl}).then(function (rep) {
-                    this.$message({
-                        message: resp.data.msg,
-                        type: 'success'
-                    })
+                console.log(logoUrl)
+                axios.post("/img/addImg/"+_this.albumId+"",{"imgUrl":logoUrl}).then(function (rep) {
+                    _this.imgs = []
+                    _this.imgUrlList = []
+                    _this.imgItem = {}
                     _this.page(_this.albumId,0)
                 })
 
@@ -113,16 +97,15 @@
             },
             page(id,pageNo,pageSize=2,){
                 const  _this = this
-                this.$message({
-                    message:id,
-                    type:'success'
-                })
                 axios.post("/img/pageQuery?pageNo="+pageNo+"&pageSize="+pageSize+"&albumId="+id).then(function (resp) {
                     _this.imgItem =Object.assign({},_this.imgItem,resp.data.records)
                     _this.imgs = _this.imgs.concat(resp.data.records)
                     // _this.albums = resp.data.records
+                    console.log(_this.imgs)
                     for(let i=0 ; i < _this.imgs.length;i++){
-                        _this.imgs[i].imgUrl = axios.defaults.baseURL+"/album/"+_this.imgs[i].imgUrl
+                        if(_this.imgs[i].imgUrl.indexOf("http:")){
+                            _this.imgs[i].imgUrl = axios.defaults.baseURL+"/album/"+_this.imgs[i].imgUrl
+                        }
                         _this.imgUrlList.push(_this.imgs[i].imgUrl)
                     }
                     _this.total = resp.data.total
@@ -140,7 +123,9 @@
                     let data ={"imgId":imgId}
                     axios.post("/img/deleteImg",data).then(function (resp) {
                         _this.imgs = []
-                        _this.page(0)
+                        _this.imgUrlList = []
+                        _this.imgItem = {}
+                        _this.page(_this.albumId,0)
                         _this.$message({
                             type: 'success',
                             message: '删除成功!'
