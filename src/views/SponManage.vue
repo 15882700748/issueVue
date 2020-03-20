@@ -27,29 +27,39 @@
             </el-row>
         </el-header>
         <el-main>
-            <SponInfoCardComp  v-for="item in tableData " :ruleForm="ruleForm" :isLast="isLast" :data="item" :currentPage="currentPage" :allItem="tableData" @newAllItem="getNewAllItem">
-            </SponInfoCardComp>
-            <div class="addInfo" v-if="isLast">
-                <i id="addIcon" class="el-icon-plus avatar-uploader-icon" @click="showDialog"></i>
+            <div v-if="tableData">
+                <SponInfoCardComp  v-for="item in tableData " :ruleForm="ruleForm" :isLast="isLast" :data="item" :currentPage="currentPage" :allItem="tableData" @newAllItem="getNewAllItem">
+                </SponInfoCardComp>
+                <div class="addInfo" v-if="isLast">
+                    <i id="addIcon" class="el-icon-plus avatar-uploader-icon" @click="showDialog"></i>
+                </div>
+
+                <el-pagination
+                        background
+                        layout="prev, pager, next"
+                        :total="total"
+                        :page-size="pageSize"
+                        :current-page="currentPage"
+                        @current-change = "page" style="position: relative;left: 0;top:20px;">
+                </el-pagination>
+            </div>
+            <div v-else>
+                没有更多了
             </div>
             <el-dialog title="新增赞助商" :visible.sync="dialogFormVisible" :close-on-click-modal="!dialogFormVisible"
                        width="30%" center  @closed="addSponHandleOnClose('addSponForm')" >
                 <el-form :model="addSponForm" :rules="addSponFormRule" ref="addSponForm">
                     <el-form-item prop="logoUrl">
                         <el-row>
-                            <el-col :span="8" :offset="10"  class="addSponFormIcon">
+                            <el-col :span="8" :offset="10"  >
                                 <el-upload
                                         ref="upload"
-                                        action="http://localhost:8181/addSponUpload/"
+                                        action="http://localhost:8181/uploadSponIcon"
                                         :show-file-list="false"
                                         :on-success="addSponHandleSuccess"
                                         :before-upload="addSponHandleBeforeUpload"
-                                        :auto-upload="autoUpload">
-                                    <div slot="file" slot-scope="{file}">
-                                        <img v-if="file.url" :src="file.url" class="avatar">
-                                        <i v-else class="el-icon-plus avatar-icon"></i>
-                                    </div>
-
+                                        :auto-upload="true">
+                                    <img v-if="true" class="addSponFormIcon" style="display: inline-block;width: 50px;height: 50px;"  :src="axios.defaults.baseURL+tempPath">
                                 </el-upload>
                             </el-col>
                         </el-row>
@@ -67,14 +77,6 @@
                     <el-button type="primary" @click="submitAddSponForm('addSponForm')">确 定</el-button>
                 </div>
             </el-dialog>
-            <el-pagination
-                    background
-                    layout="prev, pager, next"
-                    :total="total"
-                    :page-size="pageSize"
-                    :current-page="currentPage"
-                    @current-change = "page" style="position: relative;left: 0;top:20px;">
-            </el-pagination>
         </el-main>
     </el-container>
 </template>
@@ -115,7 +117,10 @@
                 autoUpload:false,
                 isLast:false,
                 uploadSuccess:true,
+                tempPath:'sponIcon/16christine-zhu-1460573-unsplash.jpg',
+                uploadFIleName:'',
                 conditionSearch:false,
+                isUploaded:false
             }
         },
         methods: {
@@ -130,6 +135,7 @@
                 const _this = this
                 axios.post("/spon/page?pageNo="+(currentPage)+"&pageSize="+pageSize+"&"+this.ruleForm.select+"="+this.ruleForm.content).then(function(resp){
                     _this.tableData = resp.data.records
+                    console.log(resp)
                     for(let i=0; i<resp.data.records.length;i++){
                         _this.tableData[i].logoUrl= axios.defaults.baseURL+'sponIcon/'+_this.tableData[i].logoUrl
                     }
@@ -145,7 +151,7 @@
                     type: 'success'
                 });
             },
-            deleteOrgById(row){
+            deleteSponById(row){
                 const _this = this
                 this.$confirm('此操作将永久删除该, 是否继续?', '提示', {
                     confirmButtonText: '确定',
@@ -158,7 +164,7 @@
                             type: 'success',
                             message: '删除成功!'
                         });
-                        window.location.reload();
+
                     })
 
                 }).catch(() => {
@@ -197,22 +203,37 @@
                 return isJPG && isLt2M;
             },
             addSponHandleSuccess(res,file){
+                this.uploadSuccess = true
+                this.isUploaded = true
                 console.log(res)
+                this.tempPath = res.filePath
+                this.uploadFIleName = file.name
+                this.tempPath ='temp/'+this.tempPath
             },
             addSponHandleOnClose(formName){
                 this.$refs[formName].resetFields();
+                this.tempPath = 'sponIcon/16christine-zhu-1460573-unsplash.jpg'
             },
             submitAddSponForm(formName){
                 this.$refs[formName].validate((valid) => {
                     const _this = this;
                     if (valid) {
                         //submit file
-                        _this.$refs.upload.submit();
-                        _this.addSponForm.logoUrl = '16christine-zhu-1460573-unsplash.jpg'
+                        _this.$refs['upload'].submit();
+                        console.log("isUpload"+this.isUploaded)
+                        if(this.isUploaded){//uploaded
+                            _this.addSponForm.logoUrl = _this.uploadFIleName
+
+                        }else{
+                            _this.addSponForm.logoUrl = _this.tempPath.substr(9)
+                        }
+                        console.log(_this.addSponForm)
                         if(this.uploadSuccess){
                             axios.post('/spon/AddSpon',_this.addSponForm).then(function (resp) {
                                 if(resp.data.code === "200"){
                                     _this.dialogFormVisible = false
+                                    _this.isUploaded = false
+                                    _this.tempPath='sponIcon/16christine-zhu-1460573-unsplash.jpg'
                                     let curPage = _this.currentPage
                                     if(_this.isLast && _this.tableData.length === _this.pageSize){
                                         curPage += 1;
@@ -235,6 +256,7 @@
                                 message:"上传失败",
                                 type:'error'
                             })
+                            console.log(_this.$refs['upload'])
                         }
                     } else {
                         console.log('error submit!!');
@@ -284,7 +306,7 @@
         width: 162px;
         height: 157px;
         background-color: #fff;
-        border: 2px solid #000;
+        /*border: 2px solid #000;*/
         border-radius: 6px;
         color: #000;
         position: relative;
@@ -297,7 +319,6 @@
         border: 3px solid #000;
         cursor: pointer;
         opacity: .8;
-        position: relative;
     }
     #addIcon{
         position: relative;

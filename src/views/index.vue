@@ -2,7 +2,12 @@
     <div >
         <el-container >
             <el-header >
-                <LogOutComp class="logout"></LogOutComp>
+                <div>
+                    欢迎{{orgName}}
+                </div>
+                <div>
+                    <LogOutComp class="logout"></LogOutComp>
+                </div>
             </el-header>
             <el-container>
                 <el-aside width="200px">
@@ -33,6 +38,14 @@
         name:'index',
         components:{
             LogOutComp
+        },
+        data(){
+          return{
+              orgName:''
+          }
+        },
+        created(){
+            this.orgName = this.$route.query.orgName
         }
     }
 </script>
@@ -48,6 +61,7 @@
     }
     .logout{
         position: absolute;
+        top: 4px;
         right: 1%;
     }
 </style>

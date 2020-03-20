@@ -3,24 +3,24 @@
         <div class="card">
             <div class="headerCard">
                 <span style="position: absolute;display: block;width: 20px;height: 20px;top: 5px;left: 138px;font-size:20px">
-                    <i class="el-icon-circle-close" @click="deleteSponById(data.sponId)"></i>
+                    <i class="el-icon-circle-close" @click="deleteSponById(sponData.sponId)"></i>
                 </span>
                 <el-upload
                         class=""
-                        :action="'http://localhost:8181/updateSponIcon/'+data.sponId"
+                        :action="'http://localhost:8181/updateSponIcon/'+sponData.sponId"
                         :show-file-list="false"
                         :on-success="handleAvatarSuccess"
                         :before-upload="beforeAvatarUpload" >
-                    <img  :src="sponIcon" class="avatar avatarImg">
+                    <img  :src="sponData.logoUrl" class="avatar avatarImg">
                 </el-upload>
                 <p style="position: relative;top: 30px;">
-                    <strong>赞助商：</strong>{{data.sponName}}
-                    <i class="el-icon-edit editContent" @click="updateSpon('sponName',data.sponName,data.sponId)"></i>
+                    <strong>赞助商：</strong>{{sponData.sponName}}
+                    <i class="el-icon-edit editContent" @click="updateSpon('sponName',sponData.sponName,sponData.sponId)"></i>
                 </p>
                 <p style="position: relative;top: 40px;">
-                    <strong>网站：</strong> <el-link type="primary" :href="'http://'+data.site"
-                             target="_blank">{{data.site}}</el-link>
-                    <i class="el-icon-edit editContent" @click="updateSpon('site',data.site,data.sponId)"></i>
+                    <strong>网站：</strong> <el-link type="primary" :href="'http://'+sponData.site"
+                             target="_blank">{{sponData.site}}</el-link>
+                    <i class="el-icon-edit editContent" @click="updateSpon('site',sponData.site,sponData.sponId)"></i>
                 </p>
                 <el-dialog title="修改" :visible.sync="infoCardDialogVisible" @closed="infoCardDialogCloded('sponDailogForm')">
                     <el-form :model="form" :rules="rule" ref="sponDailogForm">
@@ -57,6 +57,11 @@
             }
 
         },
+        computed:{
+            sponData(){
+                return this.data;
+            }
+        },
         methods:{
             page(currentPage,pageSize=2){
                 const _this = this
@@ -69,9 +74,9 @@
                 })
             },
             handleAvatarSuccess(res, file) {
-                this.sponIcon =axios.defaults.baseURL+'sponIcon/'+ res.filePath
+                this.sponData.logoUrl =axios.defaults.baseURL+'sponIcon/'+ res.filePath
                 // this.sponIcon = URL.createObjectURL(file.raw);
-                console.log(this.sponIcon )
+                console.log(this.sponData.logoUrl )
                 this.$message({
                     message: '上传成功',
                     type: 'success'
@@ -101,7 +106,6 @@
                     let data = {}
                     data[this.form.key]=this.form.name
                     data['sponId'] = this.form.sponId
-                    console.log(data)
                     if(valid){
                         axios.post('/spon/updateSpon',data).then(function (resp) {
                             let data = resp.data
@@ -119,7 +123,6 @@
                                 })
                             }
                         })
-                        console.log(data)
                     }else{
                         console.log('error submit!!');
                         return false;
@@ -138,16 +141,15 @@
                     type: 'error'
                 }).then(() => {
                     let data ={"sponId":id}
-                    axios.post("/spon/deleteOrgById",data).then(function (resp) {
+                    axios.post("/spon/deleteSponById",data).then(function (resp) {
 
                         let curPage = _this.currentPage
                         if(_this.isLast && _this.allItem.length === 1){
                             curPage -= 1;
                         }
-                        console.log(_this.isLast)
-                        console.log(curPage)
+
+                        _this.page(curPage)
                         console.log(_this.allItem.length)
-                        _this.page(curPage,2)
                         _this.$message({
                             type: 'success',
                             message: '删除成功!'
@@ -163,7 +165,7 @@
             }
         },
         created(){
-            this.sponIcon = this.data.logoUrl
+
         }
     }
 </script>

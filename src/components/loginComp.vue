@@ -107,7 +107,12 @@
                                     type: "success"
                                 })
                                 window.sessionStorage.setItem('token',res.token)
-                                _this.$router.push("/index")
+                                _this.$router.push({
+                                    path:'/index',
+                                    query:{
+                                        orgName:res.orgName
+                                    }
+                                })
                             }else{
                                 _this.$message({
                                     message:res.msg,

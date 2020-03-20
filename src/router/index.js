@@ -16,6 +16,7 @@ import ForgetPassword from '../views/ForgetPassword'
 import RedirectPage from  '../views/tool/redirectPage'
 import AlbumComp from '../components/picture/albumComp'
 import pictureComp from '../components/picture/pictureComp'
+import IssueManage from '../views/issue/issueManage'
 Vue.use(VueRouter)
 
 const routes = [
@@ -69,13 +70,18 @@ const routes = [
     },
     {
         path:'/index5',
-        name: '文章管理',
+        name: '会议文章',
         component:Index,
-        redirect:'/ArticleManage',
+        redirect:'/issueManage',
         show:true,
         isDivider:false,
         icon:'el-icon-notebook-2',
         children:[
+            {
+                path:'/issueManage',
+                name:'会议管理',
+                component:IssueManage,
+            },
             {
                 path:'/ArticleManage',
                 name:'文章管理',
