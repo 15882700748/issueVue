@@ -3,7 +3,13 @@
         <el-container>
             <el-header>
                 <el-row>
-                    <el-col :span="1" :offset="23">
+                    <el-col :span="1" >
+                        <i class="el-icon-back" @click="backIssue"></i>
+                    </el-col>
+                    <el-col :span="4" :offset="8">
+                        查看:<strong>{{issueTitle}}</strong>会议
+                    </el-col>
+                    <el-col :span="1"  :offset="10">
                         <i class="el-icon-delete-solid" @click="deleteArticles"></i>
                     </el-col>
                 </el-row>
@@ -116,10 +122,24 @@
         mounted () {
             tinymce.init({})
         },
+        beforeRouteEnter(to, form, next) {
+            let issueId = window.sessionStorage.getItem("issueId");
+            console.log(issueId)
+            if(issueId === undefined || issueId === null){
+                next('/issueManage')
+            }else{
+                next()
+            }
+
+        },
+        beforeRouteLeave(to, form, next) {
+            console.log("leave")
+            window.sessionStorage.removeItem("issueId")
+            next()
+        },
         components: {Editor},
         data(){
             return {
-                tableData: [],
                 master_user: {
                     sel: null,//选中行
                     isUpdate:true,
@@ -194,12 +214,16 @@
                 multipleSelection:'',
                 hoverTitle:'',
                 hoverContent:'',
+                issueTitle:'',
                 articleDialogFormVisible:false,
                 dialogTinymecVisible:false,
                 isEdited:false
             }
         },
         methods: {
+            backIssue(){
+              this.$router.push("/issueManage")
+            },
             getCeilContent(id){
                 const  _this = this
                 axios.post('/article/getOneArticle',{"articleId":id}).then(function (resp) {
@@ -245,7 +269,8 @@
             },
             page(pageNo,pageSize=10,){
                 const  _this = this
-                axios.post("/article/page?pageNo="+pageNo+"&pageSize="+pageSize).then(function (resp) {
+                let id = window.sessionStorage.getItem("issueId")
+                axios.post("/article/page?pageNo="+pageNo+"&pageSize="+pageSize+"&issueId="+id).then(function (resp) {
                     _this.master_user.data = resp.data.records
                    for(let i=0; i<_this.master_user.data.length;i++){
                        _this.master_user.data[i].isSet = false;
@@ -345,6 +370,7 @@
                 if (row.isSet) {
                     this.isEdited = false
                     if(this.master_user.isUpdate){//更新
+                        this.master_user.sel.issueId = window.sessionStorage.getItem("issueId")
                         let data = this.master_user.sel
                         if(data.title === '' || data.holdupTime === '' || data.content === ''){
                             this.$message.warning("内容不能为空")
@@ -367,6 +393,7 @@
                             }
                         })
                     }else{
+                        this.master_user.sel.issueId = window.sessionStorage.getItem("issueId")
                         let data =JSON.parse(JSON.stringify(this.master_user.sel))
                         console.log(data)
                         if(data.title === '' || data.holdupTime === '' || data.content === ''){
@@ -444,6 +471,7 @@
             }
         },
         created(){
+            this.issueTitle = window.sessionStorage.getItem("issueTitle")
             this.page(0)
         }
     }

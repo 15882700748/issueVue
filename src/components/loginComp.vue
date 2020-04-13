@@ -107,6 +107,7 @@
                                     type: "success"
                                 })
                                 window.sessionStorage.setItem('token',res.token)
+                                window.sessionStorage.setItem('orgName',res.orgName)
                                 _this.$router.push({
                                     path:'/index',
                                     query:{

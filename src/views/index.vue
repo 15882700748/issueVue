@@ -14,7 +14,7 @@
                     <el-menu router>
                         <el-submenu index="1" v-for="(item,index) in $router.options.routes" v-show="item.show" :index="index+''">
                             <template slot="title"><i :class="item.icon"></i>{{item.name}}</template>
-                            <el-menu-item v-for="(item2, index2) in item.children" :index="item2.path">{{item2.name}}</el-menu-item>
+                            <el-menu-item v-for="(item2, index2) in item.children" :index="item2.path" v-show="item2.show">{{item2.name}}</el-menu-item>
                         </el-submenu>
                     </el-menu>
                 </el-aside>
@@ -45,7 +45,7 @@
           }
         },
         created(){
-            this.orgName = this.$route.query.orgName
+            this.orgName = window.sessionStorage.getItem("orgName")
         }
     }
 </script>

@@ -17,6 +17,7 @@ import RedirectPage from  '../views/tool/redirectPage'
 import AlbumComp from '../components/picture/albumComp'
 import pictureComp from '../components/picture/pictureComp'
 import IssueManage from '../views/issue/issueManage'
+import Map from "../views/tool/map"
 Vue.use(VueRouter)
 
 const routes = [
@@ -30,6 +31,7 @@ const routes = [
         icon:'el-icon-s-home',
         children:[
             {
+                show:true,
                 path:'/HomeConfig',
                 name: 'HomeConfig',
                 component:HomeConfig,
@@ -46,6 +48,7 @@ const routes = [
         icon:'el-icon-reading',
         children:[
             {
+                show:true,
                 path:'/ArticleConfig',
                 name:'文章配置',
                 component:ArticleConfig,
@@ -62,6 +65,7 @@ const routes = [
         icon:'el-icon-document',
         children:[
             {
+                show:true,
                 path:'/ColumConfig',
                 name:'ColumConfig',
                 component:ColumConfig,
@@ -78,11 +82,13 @@ const routes = [
         icon:'el-icon-notebook-2',
         children:[
             {
+                show:true,
                 path:'/issueManage',
                 name:'会议管理',
                 component:IssueManage,
             },
             {
+                show:false,
                 path:'/ArticleManage',
                 name:'文章管理',
                 component:ArticleManage,
@@ -99,6 +105,7 @@ const routes = [
         icon:'el-icon-office-building',
         children:[
             {
+                show:true,
                 path:'/SponManage',
                 name:'赞助商管理',
                 component:SponManage,
@@ -115,6 +122,7 @@ const routes = [
         icon:'el-icon-user',
         children:[
             {
+                show:true,
                 path:'/MessageManage',
                 name:'信息管理',
                 component:MessageManage,
@@ -131,6 +139,7 @@ const routes = [
         icon:'el-icon-picture-outline',
         children:[
             {
+                show:true,
                 path:'/PictureManage',
                 name:'图片管理',
                 redirect:'/album',
@@ -173,6 +182,12 @@ const routes = [
         name:'页面跳转',
         show:false,
         component:RedirectPage
+    },
+    {
+        path:'/map',
+        name:'地图',
+        show:false,
+        component:Map
     }
 ]
 

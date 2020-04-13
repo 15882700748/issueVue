@@ -5,7 +5,11 @@ import router from './router'
 import store from './store'
 import './plugins/element.js'
 import api from './config/vue.config'
+import BMap from 'vue-baidu-map'
 
+Vue.use(BMap,{
+  ak:'XSdzkf0NfDrhjsltQ2IQGTdA9GBXTr2K'
+})
 Vue.config.productionTip = false
 axios.defaults.timeout = 5000
 axios.defaults.baseURL = 'http://localhost:8181/'

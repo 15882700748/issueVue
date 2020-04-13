@@ -227,7 +227,6 @@
                         }else{
                             _this.addSponForm.logoUrl = _this.tempPath.substr(9)
                         }
-                        console.log(_this.addSponForm)
                         if(this.uploadSuccess){
                             axios.post('/spon/AddSpon',_this.addSponForm).then(function (resp) {
                                 if(resp.data.code === "200"){

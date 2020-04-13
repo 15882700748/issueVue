@@ -1,13 +1,14 @@
 <template>
-
-    <span>
-        栏目管理
-    </span>
+    <searchMap></searchMap>
 </template>
 
 <script>
+    import  searchMap from '../components/tool/searchMap'
     export default {
-        name: "ColumConfig"
+        name: "ColumConfig",
+        components:{
+            searchMap
+        }
     }
 </script>
 
