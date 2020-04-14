@@ -1,13 +1,18 @@
 <template>
-    <baidu-map :center="center" :zoom="zoom" :scroll-wheel-zoom="true"
-               @ready="popoverMapReady"
-               style="height: 400px; width: 200%">
-        <bm-marker :position="center" >
-            <bm-info-window :show="show" @close="infoWindowClose" @open="infoWindowOpen" style="font-size: 14px">
-                <p>站点地址：{{loc}}</p>
-            </bm-info-window>
-        </bm-marker>
-    </baidu-map>
+    <div>
+        <div style="width: 400px">地图显示</div>
+        <el-divider></el-divider>
+        <baidu-map :center="center" :zoom="zoom" :scroll-wheel-zoom="true"
+                   @ready="popoverMapReady"
+                   style="height: 400px; width: 400px">
+            <bm-marker :position="center" >
+                <bm-info-window :show="show" @close="infoWindowClose" @open="infoWindowOpen" style="font-size: 14px">
+                    <p>站点地址：{{loc}}</p>
+                </bm-info-window>
+            </bm-marker>
+        </baidu-map>
+    </div>
+
 </template>
 
 <script>

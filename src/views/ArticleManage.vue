@@ -6,10 +6,10 @@
                     <el-col :span="1" >
                         <i class="el-icon-back" @click="backIssue"></i>
                     </el-col>
-                    <el-col :span="4" :offset="8">
-                        查看:<strong>{{issueTitle}}</strong>会议
+                    <el-col :span="8" :offset="6">
+                        查看:<strong>{{issueTitle}}</strong>会议文章
                     </el-col>
-                    <el-col :span="1"  :offset="10">
+                    <el-col :span="1"  :offset="8">
                         <i class="el-icon-delete-solid" @click="deleteArticles"></i>
                     </el-col>
                 </el-row>

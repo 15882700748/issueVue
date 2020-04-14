@@ -1,48 +1,35 @@
 <template>
-    <div class='tinymce'>
-        <h1>tinymce</h1>
-        <editor id='tinymce' v-model='tinymceHtml' :init='init'></editor>
-        <div v-html='tinymceHtml'></div>
+    <div class="table">
+        <kind-editor id="editor_id" height="500px" width="700px" :content.sync="editorText"
+                :afterChange="afterChange()"
+                pluginsPath="kindeditor/plugins/"
+                :loadStyleMode="false"
+                @on-content-change="onContentChange"></kind-editor>
+        <div> editorTextCopy: {{ editorTextCopy }} </div>
+
     </div>
 </template>
 
 <script>
-    import tinymce from 'tinymce/tinymce'
-    import 'tinymce/themes/modern/theme'
-    import Editor from '@tinymce/tinymce-vue'
-    import 'tinymce/plugins/image'
-    import 'tinymce/plugins/link'
-    import 'tinymce/plugins/code'
-    import 'tinymce/plugins/table'
-    import 'tinymce/plugins/lists'
-    import 'tinymce/plugins/contextmenu'
-    import 'tinymce/plugins/wordcount'
-    import 'tinymce/plugins/colorpicker'
-    import 'tinymce/plugins/textcolor'
     export default {
-        name: 'tinymce',
+        name: 'table',
         data () {
             return {
-                tinymceHtml: '请输入内容',
-                init: {
-                    language_url: 'tinymce/zh_CN.js',
-                    language: 'zh_CN',
-                    skin_url: 'tinymce/skins/lightgray',
-                    height: 300,
-                    plugins: 'link lists image code table colorpicker textcolor wordcount contextmenu',
-                    toolbar:
-                        'bold italic underline strikethrough | fontsizeselect | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | outdent indent blockquote | undo redo | link unlink image code | removeformat',
-                    branding: false
-                }
+                editorText: '直接初始化值', // 双向同步的变量
+                editorTextCopy: ''  // content-change 事件回掉改变的对象
             }
         },
-        mounted () {
-            tinymce.init({})
-        },
-        components: {Editor}
+        methods: {
+            onContentChange (val) {
+                this.editorTextCopy = val;
+                // console.log(this.editorTextCopy)
+            },
+            afterChange () {
+            }
+        }
     }
 </script>
 
-<style scoped>
+<style>
 
 </style>

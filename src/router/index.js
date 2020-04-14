@@ -7,6 +7,7 @@ import Register from '../views/register'
 import ArticleConfig from '../views/ArticleConfig'
 import ArticleManage from '../views/ArticleManage'
 import ColumConfig from '../views/ColumConfig'
+import ColumManage from '../views/ColumManage'
 import HomeConfig from '../views/HomeConfig'
 import Login from '../views/Login'
 import MessageManage from '../views/MessageManage'
@@ -21,26 +22,21 @@ import Map from "../views/tool/map"
 Vue.use(VueRouter)
 
 const routes = [
+    // {
+    //     path:'/index',
+    //     name: '首页配置',
+    //     component:Index,
+    //     redirect:'/HomeConfig',
+    //     show:true,
+    //     isDivider:false,
+    //     icon:'el-icon-s-home',
+    //     children:[
+    //
+    //     ]
+    // },
     {
         path:'/index',
-        name: '首页配置',
-        component:Index,
-        redirect:'/HomeConfig',
-        show:true,
-        isDivider:false,
-        icon:'el-icon-s-home',
-        children:[
-            {
-                show:true,
-                path:'/HomeConfig',
-                name: 'HomeConfig',
-                component:HomeConfig,
-            }
-        ]
-    },
-    {
-        path:'/index3',
-        name: '文章配置',
+        name: '样式配置',
         component:Index,
         redirect:'/ArticleConfig',
         show:true,
@@ -49,32 +45,41 @@ const routes = [
         children:[
             {
                 show:true,
-                path:'/ArticleConfig',
-                name:'文章配置',
-                component:ArticleConfig,
-            }
-        ]
-    },
-    {
-        path:'/index4',
-        name: '栏目配置',
-        component:Index,
-        redirect:'/ColumConfig',
-        show:true,
-        isDivider:true,
-        icon:'el-icon-document',
-        children:[
+                path:'/HomeConfig',
+                name: '首页样式',
+                component:HomeConfig,
+            },
             {
                 show:true,
-                path:'/ColumConfig',
-                name:'ColumConfig',
+                path:'/columConfig',
+                name:'栏目样式',
                 component:ColumConfig,
-            }
+            },
+            {
+                show:true,
+                path:'/articleConfig',
+                name:'文章样式',
+                component:ArticleConfig,
+            },
+
+
         ]
     },
+    // {
+    //     path:'/index4',
+    //     name: '栏目配置',
+    //     component:Index,
+    //     redirect:'/ColumConfig',
+    //     show:true,
+    //     isDivider:true,
+    //     icon:'el-icon-document',
+    //     children:[
+    //
+    //     ]
+    // },
     {
         path:'/index5',
-        name: '会议文章',
+        name: '会议管理',
         component:Index,
         redirect:'/issueManage',
         show:true,
@@ -84,8 +89,14 @@ const routes = [
             {
                 show:true,
                 path:'/issueManage',
-                name:'会议管理',
+                name:'会议',
                 component:IssueManage,
+            },
+            {
+                show:false,
+                path:'/columManage',
+                name:'会议栏目',
+                component:ColumManage,
             },
             {
                 show:false,

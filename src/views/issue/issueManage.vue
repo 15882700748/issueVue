@@ -25,7 +25,7 @@
                                 <template v-if="v.field === 'location'">
                                     <el-popover
                                             placement="top-start"
-                                            width="200"
+                                            width="200%"
                                             trigger="hover"
                                             @show = initPopverMap(scope.row,scope.$index) @close="onClosePopoverMap">
                                         <popover-map :location="scope.row.loc"></popover-map>
@@ -39,11 +39,12 @@
                                 </span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="文章查看" align="center">
+                        <el-table-column label="管理" align="center">
                             <template slot-scope="scope">
-                                <el-link type="primary" @click="viewIssue(scope.row.issueId,scope.row.title)">查看</el-link>
+                                <el-link type="primary" @click="viewIssue(scope.row.issueId,scope.row.title)">文章管理</el-link>
+                                <el-divider direction="vertical"></el-divider>
+                                <el-link type="primary" @click="viewIssueColum(scope.row.issueId,scope.row.title)">栏目管理</el-link>
                             </template>
-
                         </el-table-column>
                         <el-table-column label="操作" width="100" align="center">
                             <template slot-scope="scope">
@@ -500,7 +501,7 @@
                             if(resp.data.code === "200"){
                                 _this.dialogIssueFormVisible = false
                                 let curPage = _this.currentPage
-                                if(_this.isLast && _this.tableData.length === _this.pageSize){
+                                if(_this.currentPage === _this.totalPage && _this.issueData.data.length === _this.pageSize){
                                     curPage += 1;
                                 }
                                 _this.page(curPage)
@@ -547,6 +548,11 @@
               window.sessionStorage.setItem("issueId",id);
               window.sessionStorage.setItem("issueTitle",title);
               this.$router.push("/ArticleManage")
+            },
+            viewIssueColum(id,title){
+                window.sessionStorage.setItem("issueId",id);
+                window.sessionStorage.setItem("issueTitle",title);
+                this.$router.push("/columManage")
             },
             deleteIssue(id){
                 const  _this = this

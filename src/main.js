@@ -6,7 +6,12 @@ import store from './store'
 import './plugins/element.js'
 import api from './config/vue.config'
 import BMap from 'vue-baidu-map'
+import VueKindEditor from './plugins/kindeditor'
+import '../public/kindeditor/themes/default/default.css'
+import '../public/kindeditor/kindeditor-all-min.js'
+import '../public/kindeditor/lang/zh-CN.js'
 
+Vue.use(VueKindEditor)
 Vue.use(BMap,{
   ak:'XSdzkf0NfDrhjsltQ2IQGTdA9GBXTr2K'
 })
