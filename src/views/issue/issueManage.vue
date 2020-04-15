@@ -31,8 +31,10 @@
                                         <popover-map :location="scope.row.loc"></popover-map>
                                         <span slot="reference" type="primary" @click="viewLocation(scope.row)">{{scope.row[v.field]}}</span>
                                     </el-popover>
-
                                 </template>
+                                <span v-else-if="v.field === 'content'" @click="contentDrawer(scope.row) ">
+                                    {{scope.row[v.field]}}
+                                </span>
                                 <el-image v-else-if="v.field === 'logo'" style="display: inline-block;width: 50px;height: 50px;"  :src="scope.row[v.field]"></el-image>
                                 <span v-else>
                                     {{scope.row[v.field]}}
@@ -142,7 +144,7 @@
                                         <el-input v-model="addIssueForm.title" autocomplete="off" placeholder="标题" @input="updateIssueData('title',addIssueForm.issueId)"></el-input>
                                     </el-form-item>
                                     <el-form-item label="" prop="content" v-show="active === 3">
-                                        <editor style="height: 150px"  v-model='addIssueForm.content' :init='init' @input="updateIssueData('content',addIssueForm.issueId)"></editor>
+                                        <editor style="height: 150px"  v-model='addIssueForm.con' :init='init' @input="updateIssueData('content',addIssueForm.issueId)"></editor>
                                     </el-form-item>
                                     <el-form-item v-show="active === 4" prop="holdupTime">
                                         <el-date-picker
@@ -166,8 +168,18 @@
                                     <el-button type="error" @click="closeUpdateDialog">关闭</el-button>
                                 </div>
                             </el-dialog>
+                            <el-drawer
+                                    :with-header="false"
+                                    :visible.sync="viewIssuedetailsVisible"
+                                    direction="rtl">
+                                <strong>标题：</strong>{{issueDetails.title}}
+                                <el-divider></el-divider>
+                                <strong>内容：</strong>
+                                <span v-html="issueDetails.content"></span>
+                            </el-drawer>
                         </div>
                     </el-table>
+
                 </div>
                 <div>
                     <el-pagination
@@ -216,7 +228,7 @@
                     columns: [
                         { field: "logo", title: "图标" },
                         { field: "title", title: "标题" },
-                        { field: "content", title: "内容"},
+                        { field: "content", title: "内容(可点击详情)"},
                         { field: "holdupTime", title: "举办时间"},
                         { field: "location", title: "举办地点"},
                     ],
@@ -298,14 +310,20 @@
                 dialogIssueUpdateVisible:false,
                 isUploaded:false,
                 isUpdate:false,
+                viewIssuedetailsVisible:false,
                 geoc:null,
                 tempLocation:{},
                 tempRow:{},
-                tempIndex:0
+                tempIndex:0,
+                issueDetails:{title:'', content:''}
             }
         },
         methods:{
-
+            contentDrawer(row){
+                this.viewIssuedetailsVisible = true
+                this.issueDetails.title = row.title
+                this.issueDetails.content = row.con
+            },
             initPopverMap(row,index){
                 let center = JSON.parse(row.loc);
                 row.popoverLocation = center
@@ -390,6 +408,7 @@
                   _this.issueData.data = resp.data.records
                   for(let i=0; i<_this.issueData.data.length;i++){
                       _this.issueData.data[i].isSet = false;
+                      _this.issueData.data[i].con = _this.issueData.data[i].content
                       _this.issueData.data[i].content = _this.subContent(_this.issueData.data[i].content)
                       _this.issueData.data[i].logo= axios.defaults.baseURL+'issue/'+_this.issueData.data[i].logo
                       _this.issueData.data[i].loc = _this.issueData.data[i].location
@@ -442,11 +461,14 @@
                 }else{
                     data[type] = this.addIssueForm[type]
                 }
-
+                if(type === 'content'){
+                    this.addIssueForm.content = this.addIssueForm.con
+                }
+                console.log(this.addIssueForm)
                 data.issueId = id
                 axios.post('/issue/updateIssue',data).then(function (resp) {
                     if(resp.data.code === "200"){
-
+                        _this.page(_this.currentPage)
                     }else{
                         _this.$message({
                             message:resp.data.msg,

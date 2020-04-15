@@ -1,7 +1,7 @@
 <template>
     <div >
         <el-container >
-            <el-header >
+            <el-header style="background-color: white;border-bottom: 1px #eee solid">
                 <div>
                     欢迎{{orgName}}
                 </div>
@@ -10,7 +10,7 @@
                 </div>
             </el-header>
             <el-container>
-                <el-aside width="200px">
+                <el-aside width="210px"  style="height:680px;border-right:1px #eee solid ">
                     <el-menu router>
                         <el-submenu index="1" v-for="(item,index) in $router.options.routes" v-show="item.show" :index="index+''">
                             <template slot="title"><i :class="item.icon"></i>{{item.name}}</template>

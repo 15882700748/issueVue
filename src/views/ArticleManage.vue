@@ -50,7 +50,7 @@
                                 <span v-else-if="v.field !== 'content'">{{scope.row[v.field]}}</span>
                                 <el-popover v-else
                                          :enterable="false"
-                                        width="200" style="height: 100px"
+                                        width="100%"
                                         trigger="hover" placement="top" :visible-arrow="true"
                                          @show="getCeilContent(scope.row.articleId)">
                                     <div>
@@ -230,7 +230,7 @@
                     let d = resp.data.content
                     let len = _this.getLength(d)
                     if(len > 100){
-                        d = d.substr(0,100)
+                        d = d.substr(0,200)
                     }
                     _this.hoverContent = d
                     _this.hoverTitle = resp.data.title
@@ -489,4 +489,3 @@
         display: flex;
         line-height: 34px;
     }
-</style>

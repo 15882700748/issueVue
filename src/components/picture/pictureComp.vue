@@ -65,7 +65,6 @@
                 // this.imageUrl = URL.createObjectURL(file.raw);
                 const  _this =this
                 let logoUrl = res.filePath
-                console.log(logoUrl)
                 axios.post("/img/addImg/"+_this.albumId+"",{"imgUrl":logoUrl}).then(function (rep) {
                     _this.imgs = []
                     _this.imgUrlList = []
@@ -101,7 +100,6 @@
                     _this.imgItem =Object.assign({},_this.imgItem,resp.data.records)
                     _this.imgs = _this.imgs.concat(resp.data.records)
                     // _this.albums = resp.data.records
-                    console.log(_this.imgs)
                     for(let i=0 ; i < _this.imgs.length;i++){
                         if(_this.imgs[i].imgUrl.indexOf("http:")){
                             _this.imgs[i].imgUrl = axios.defaults.baseURL+"/album/"+_this.imgs[i].imgUrl

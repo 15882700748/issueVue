@@ -22,23 +22,11 @@ import Map from "../views/tool/map"
 Vue.use(VueRouter)
 
 const routes = [
-    // {
-    //     path:'/index',
-    //     name: '首页配置',
-    //     component:Index,
-    //     redirect:'/HomeConfig',
-    //     show:true,
-    //     isDivider:false,
-    //     icon:'el-icon-s-home',
-    //     children:[
-    //
-    //     ]
-    // },
     {
         path:'/index',
         name: '样式配置',
         component:Index,
-        redirect:'/ArticleConfig',
+        redirect:'/HomeConfig',
         show:true,
         isDivider:false,
         icon:'el-icon-reading',
@@ -55,12 +43,12 @@ const routes = [
                 name:'栏目样式',
                 component:ColumConfig,
             },
-            {
-                show:true,
-                path:'/articleConfig',
-                name:'文章样式',
-                component:ArticleConfig,
-            },
+            // {
+            //     show:true,
+            //     path:'/articleConfig',
+            //     name:'文章样式',
+            //     component:ArticleConfig,
+            // },
 
 
         ]

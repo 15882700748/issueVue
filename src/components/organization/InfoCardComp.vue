@@ -211,7 +211,7 @@
         overflow: hidden;
         position: relative;
         z-index: 4;
-        box-shadow: 0px 5px 50px 0px #6c44fc, 0px 0px 0px 7px rgba(107, 74, 255, 0.5);
+        box-shadow: 0px 5px 50px 0px rgba(4, 4, 4, 0.99), 0px 0px 0px 7px rgba(233, 236, 255, 0.8);
     }
     .profile-card__img img {
         display: block;
@@ -230,7 +230,7 @@
     .profile-card__name {
         font-weight: 700;
         font-size: 24px;
-        color: #6944ff;
+        color: #324e63;
         margin-bottom: 15px;
     }
     .profile-card__txt {

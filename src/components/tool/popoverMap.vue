@@ -5,6 +5,9 @@
         <baidu-map :center="center" :zoom="zoom" :scroll-wheel-zoom="true"
                    @ready="popoverMapReady"
                    style="height: 400px; width: 400px">
+            <bm-scale></bm-scale>
+            <bm-navigation anchor="BMAP_ANCHOR_TOP_RIGHT"></bm-navigation>
+            <bm-city-list anchor="BMAP_ANCHOR_TOP_LEFT"></bm-city-list>
             <bm-marker :position="center" >
                 <bm-info-window :show="show" @close="infoWindowClose" @open="infoWindowOpen" style="font-size: 14px">
                     <p>站点地址：{{loc}}</p>

@@ -27,7 +27,7 @@
                                 v-for="(item,index) in albums"
                                 v-infinite-scroll="load" infinite-scroll-disabled="disabled">
                             <div class="album" >
-                                <img src="" class="img" @click="pictureView(item.albumId)">
+                                <img :src="axios.defaults.baseURL+'album/'+item.imgUrl" class="img" @click="pictureView(item.albumId)">
                                 <span class="albumName">相册名称：{{item.albumName}}</span>
                                 <span class="albumDesc">描述：{{item.albumDesc}}</span>
                                 <span class="albumDelete"><i class="el-icon-circle-close" @click="deleteAlbum(item.albumId)"></i></span>
@@ -111,11 +111,24 @@
                     }
                 })
             },
+            getAlbumImg(id){
+                let data = {},
+                    img
+                data.albumId = id
+
+                return img.imgUrl
+            },
             page(pageNo,pageSize=2){
                 const  _this = this
               axios.post("/album/pageQuery?pageNo="+pageNo+"&pageSize="+pageSize).then(function (resp) {
                   _this.albumItem =Object.assign({},_this.albumItem,resp.data.records)
                   _this.albums = _this.albums.concat(resp.data.records)
+                  for(let i=0; i<_this.albums.length; i++){
+                      axios.post("/album/getFisrtPicture",{'albumId':_this.albums[i].albumId}).then(function (resp) {
+                          _this.albums[i].imgUrl = resp.data.img.imgUrl
+                      })
+                  }
+
                   // _this.albums = resp.data.records
                   _this.total = resp.data.total
                   _this.totalPage = resp.data.pages
@@ -159,7 +172,6 @@
               this.albumDialogFormVisible = true
             },
             addAlbumHandleOnClose(formName){
-                console.log(this.$refs[formName])
                 if(formName === 'addAblumForm'){
                     this.$refs[formName].resetFields();
                 }else{
