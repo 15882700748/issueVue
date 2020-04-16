@@ -11,7 +11,7 @@
             <h1>相册查看</h1>
         </el-header>
         <el-main>
-            <router-view :isPicturePage="isPicturePage" @getHeaderStatus="getStatus"></router-view>
+            <router-view :isPicturePage="isPicturePage" @getHeaderStatus="getStatus"  ></router-view>
         </el-main>
     </el-container>
 </template>

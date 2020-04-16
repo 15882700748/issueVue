@@ -6,6 +6,7 @@ import store from './store'
 import './plugins/element.js'
 import api from './config/vue.config'
 import BMap from 'vue-baidu-map'
+
 import VueKindEditor from './plugins/kindeditor'
 import '../public/kindeditor/themes/default/default.css'
 import '../public/kindeditor/kindeditor-all-min.js'

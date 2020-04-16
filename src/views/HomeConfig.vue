@@ -50,12 +50,12 @@
                                     </li>
                                 </ul>
                                 <span v-else-if="element.name === '首页' && index1 !== 2 ">
-                                    <el-carousel v-if="index1 === 0"  :interval="4000" type="card" height="80px">
-                                        <el-carousel-item style="background-color:#99a9bf ;" v-for="item in 4" :key="element.name+item">
+                                    <el-carousel v-if="index1 === 0" :autoplay="false"  type="card" height="80px">
+                                        <el-carousel-item style="background-color:#99a9bf ;" v-for="item in 3 " :key="element.name+item">
                                         </el-carousel-item>
                                      </el-carousel>
-                                    <el-carousel v-else  :interval="4000"  height="380px">
-                                        <el-carousel-item style="background-color:#99a9bf ;" v-for="item in 3" :key="element.name+item">
+                                    <el-carousel v-else :autoplay="false" indicator-position="outside"   height="380px">
+                                        <el-carousel-item style="background-color:#99a9bf ;" v-for="item in 2" :key="element.name+item">
                                         </el-carousel-item>
                                      </el-carousel>
                                 </span>
@@ -69,7 +69,7 @@
                        <span v-if="!mainContent.isNull">
                            <span v-if="mainContent.type === 'column'" class="content" v-html="mainContent.content"></span>
                            <span v-else class="content">
-                               <el-carousel :interval="4000"  height="380px">
+                              <el-carousel :autoplay="false" indicator-position="outside"  height="320px" >
                                    <el-carousel-item v-for="(item,i) in mainContent.content" :key="item.title">
                                        <el-card shadow="always" class="box-card">
                                             <div slot="header" class="clearfix">
@@ -77,11 +77,40 @@
                                             </div>
                                            <strong>内容：</strong>
                                            <div v-html="item.content">
-
                                            </div>
                                        </el-card>
                                    </el-carousel-item>
                                </el-carousel>
+                               <div class="notice-wrapper">
+                                   <div class="notice-item notice-item-default">默认配置</div>
+                                   <div class="notice-item notice-item-set" @click="showAricleStyleDialog">配置样式</div>
+                               </div>
+                               <el-dialog
+                                       title="样式选择"
+                                       :visible.sync="styleSelectDialog"
+                                       width="400px"
+                                       height="400px"
+                                       :before-close="handleClose">
+                                  <el-carousel style="background-color: #eaeaea"  :autoplay="false" arrow="never" height="380px">
+                                        <el-carousel-item :key="'书籍效果'">
+                                            <book :articles="mainContent.content"></book>
+                                        </el-carousel-item>
+                                        <el-carousel-item >
+                                            <el-card class="box-card" shadow="always">
+                                              <div slot="header" class="clearfix" style="border-bottom: 1px solid white">
+                                                标题：<span>{{mainContent.content[0].title}}</span>
+                                              </div>
+                                                <div style="width: 100%;height: 200px;font-size: 0.1px;" v-html="mainContent.content[0].content">
+                                                </div>
+                                            </el-card>
+                                        </el-carousel-item>
+                                     </el-carousel>
+
+                                    <span slot="footer" class="dialog-footer">
+                                        <el-button @click="styleSelectDialog = false">取 消</el-button>
+                                        <el-button type="primary" @click="styleSelectDialog = false">确 定</el-button>
+                                    </span>
+                                 </el-dialog>
                            </span>
                        </span>
                         <span v-else>显示区</span>
@@ -96,10 +125,12 @@
                         </el-color-picker>
                     </el-badge>
                     <div class="controllerArea" >
-                        <el-button @click="uploadQR" >清除图片</el-button>
-                        <el-button @click="makeImg" ref="makeImgButton">生成截图</el-button>
+                        <el-button type="primary" >字体控制</el-button>
+                        <el-button type="primary" @click="uploadQR" >清除图片</el-button>
+                        <el-button type="primary" @click="makeImg" ref="makeImgButton">生成截图</el-button>
                     </div>
                 </div>
+                <!---->
 
             </el-container>
         </el-container>
@@ -111,9 +142,10 @@
     import VueDragResize from 'vue-drag-resize'
     import vueCropper from 'vue-cropper'
     import html2canvas from 'html2canvas';
+    import Book from '../components/tool/book'
     export default {
         name:'HomeConfig',
-        components:{draggable,VueDragResize,vueCropper,html2canvas},
+        components:{draggable,VueDragResize,vueCropper,html2canvas,Book},
         data(){
             return {
                 x:'',
@@ -163,7 +195,8 @@
                     content:null
                 },
                 count: 10,
-                loading: false
+                loading: false,
+                styleSelectDialog:false
             }
         },
         directives:{
@@ -266,6 +299,13 @@
             }
         },
         methods: {
+            //dialog
+            showAricleStyleDialog(){
+                this.styleSelectDialog =  true
+            },
+            handleClose(){
+
+            },
             //获取数据
             page(){
                 let _this = this
@@ -358,8 +398,6 @@
                 let data =this.homeData[i].item[j].content
                if(  data instanceof Array){
                    this.mainContent.type = 'article'
-
-                   console.log(this.homeData[i].item[j],data instanceof Array)
                 }else{
                    this.mainContent.type = 'column'
                }
@@ -400,6 +438,7 @@
         position: absolute;
         left: 220px;
         top: 101px;
+        align-items: center;
         /*border: 1px deepskyblue dashed;*/
     }
     .right{
@@ -485,7 +524,7 @@
         margin:10px auto;
         border: 1px #aaa dashed;
         border-radius: 20px;
-        cursor: default;
+        cursor: pointer;
     }
     .columnRow{
         list-style: none;
@@ -497,14 +536,53 @@
         margin:10px 10px;
         border: 1px #aaa dashed;
         border-radius: 20px;
-        cursor: default;
+        cursor: pointer;
     }
     .content{
         display: block;
         width: 540px;
         height: 360px;
         margin: 20px auto;
-        overflow: hidden;
+        position: relative;
+        /*overflow: scroll;*/
+    }
+    .notice-wrapper{
+        width: 100%;
+        height: 57px;
+        display: flex;
+        font-size: 12px;
+        position: absolute;
+        left: 0;
+        top: 0;
+        z-index: 99;
+        align-items: center;
+
+    }
+    .notice-item{
+        width: 80px;
+        height: 30px;
+        line-height: 30px;
+        border-radius: 20px;
+        color: white !important;
+    }
+    .notice-item-default{
+        position: absolute;
+        left: 20px;
+        cursor: default;
+        background-color: rgba(112,112,112,0.5);
+        box-shadow: 0px 7px 20px rgba(112,112,112,0.5);
+    }
+    .notice-item-set{
+        position: absolute;
+        right: 20px;
+        cursor: pointer;
+        background-color: rgba(106, 173, 255, 1);
+        box-shadow: 0px 7px 30px rgba(106, 173, 255, 1);
+        transition:  all ease-in 0.1s;
+    }
+    .notice-item-set:hover{
+        background-color: rgba(106, 173, 255, 0.8);
+        box-shadow: 0px 7px 20px rgba(43, 98, 169, 0.8);
     }
     .el-carousel__item h3 {
         color: #475669;
@@ -525,8 +603,73 @@
     .box-card {
         width: 100%;
         height: 380px;
-        background-color: #fff;
+        background-color: #eaeaea
     }
+    /*book*/
+    .perspective {
+        width: 100%;
+        height: 400px;
+        margin-top: 100px;
+        perspective: 800px;
+        transform-style: preserve-3d;
+    }
+    .book-wrap {
+        width: 300px;
+        height: 300px;
+        position: relative;
+        left: 480px;
+        /*transform: rotateX(30deg);*/
+        transform-style: preserve-3d;
+    }
+    .shadowBotton{
+        width: 300px;
+        height: 1px;
+        position: absolute;
+        left: 480px;
+        top:301px;
+        transform-origin: left;
+        transform: rotateY(-150deg) ;
+        box-shadow: 1px 2px 40px 4px rgb(4, 4, 4);
+        transform-style: preserve-3d;
+    }
+    .page {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        left: 0;
+        top: 0;
+        font-size: 30px;
+        /*display: flex;*/
+        text-align: center;
+        transform-origin: left;
+        border: 1px solid #1976D2;
+    }
+    .book-content {
+        background-color: #fff;
+        color: #33363C;
+        overflow: hidden;
+        transform: rotateY(-30deg) ;
+    }
+    .book-cover {
+        background-color: #1976D2;
+        color: #ffffff;
+        transform: rotateY(-150deg) ;
 
+    }
+    .book-content1{
+        /*名称、持续时间、速度曲线延迟、播放次数、反向播放*/
+        animation: roll 5s ease 0s 2 alternate;
+    }
+    @keyframes roll {
+        from {transform: rotateY(0)}
+        to {transform: rotateY(-180deg)}
+    }
+    .el-divider{
+        border-bottom: 1px solid white;
+        margin: 0;
+    }
+    .el-carousel__indicator{
+        background-color: black!important;
+    }
 </style>
 

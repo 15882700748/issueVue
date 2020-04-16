@@ -1,7 +1,6 @@
 <template>
-    <div>
-
-        <div class="infinite-list-wrapper" style="overflow-y:auto">
+    <div style="width: 100%;height: 600px">
+        <div >
             <div class="wrapper">
                 <div class="album">
                     <el-upload
@@ -14,31 +13,45 @@
                     </el-upload>
                 </div>
             </div>
-            <div
-                    class="wrapper"
-                    v-for="(item,index) in imgs"
-                    v-infinite-scroll="load" infinite-scroll-disabled="disabled">
-                <div class="album" >
-                    <div class="img">
-                        <el-image
-                                :src="item.imgUrl"
-                                fit="cover"
-                                :preview-src-list="imgUrlList"></el-image>
-                    </div>
-                    <span class="albumName">上传日期：{{item.uploadTime}}</span>
-                    <span class="albumDelete"><i class="el-icon-circle-close" style="color: red;font-size: 1.5em" @click="deleteImg(item.imgId)"></i></span>
-                </div>
-            </div>
-            <p v-if="loading">加载中...</p>
-            <p v-if="noMore">没有更多了</p>
+            <!--<div-->
+                    <!--class="wrapper"-->
+                    <!--v-for="(item,index) in imgs"-->
+                    <!--v-infinite-scroll="load" infinite-scroll-disabled="disabled">-->
+                <!--<div class="album" >-->
+                    <!--<div class="img">-->
+                        <!--<el-image-->
+                                <!--:src="item.imgUrl"-->
+                                <!--fit="cover"-->
+                                <!--:preview-src-list="imgUrlList"></el-image>-->
+                    <!--</div>-->
+                    <!--<span class="albumName">上传日期：{{item.uploadTime}}</span>-->
+                    <!--<span class="albumDelete"><i class="el-icon-circle-close" style="color: red;font-size: 1.5em" @click="deleteImg(item.imgId)"></i></span>-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--<p v-if="loading">加载中...</p>-->
+            <!--<p v-if="noMore">没有更多了</p>-->
+
         </div>
-        <el-backtop target=".page-component__scroll .el-scrollbar__wrap"></el-backtop>
+        <vue-waterfall-easy :maxCols="4" ref="waterfall" :imgsArr="imgsArr" @scrollReachBottom="getData">
+            <div class="img-info" slot-scope="props">
+                <p class="some-info">第{{props.index+1}}张图片</p>
+                <p class="som-info">{{props.value.data.uploadTime}}</p>
+            </div>
+            <div slot="waterfall-over">waterfall-over</div>
+        </vue-waterfall-easy>
+        <div >
+
+        </div>
     </div>
 </template>
 
 <script>
+    import vueWaterfallEasy from 'vue-waterfall-easy'
     export default {
         name: "pictureComp",
+        components:{
+            vueWaterfallEasy
+        },
         data(){
             return{
                 imgItem:{},
@@ -50,6 +63,8 @@
                 albumId:'',
                 imageUrl:'',
                 loading: false,
+                imgsArr: [],
+                pages:0
             }
         },
         computed: {
@@ -61,6 +76,29 @@
             }
         },
         methods:{
+            getData() {
+                let _this = this
+                axios.post("/img/pageQuery?pageNo="+_this.pages+"&pageSize="+8+"&albumId="+_this.albumId) // 真实环境中，后端会根据参数group返回新的图片数组，这里我用一个惊呆json文件模拟
+                    .then(res => {
+                        let logos = []
+                        for(let i=0; i<res.data.records.length; i++){
+                            let d = {
+                                src :'',
+                                href : '',
+                                data : null
+                            }
+                            console.log(res.data.records)
+                            d.src = axios.defaults.baseURL+'/album/'+res.data.records[i].imgUrl
+                            //axios.defaults.baseURL+"/album/"+_this.imgs[i].imgUrl
+                            d.data = res.data.records[i]
+                            logos.push(d)
+                        }
+                        _this.imgsArr = _this.imgsArr.concat(logos)
+                        console.log(_this.imgsArr)
+                        if(_this.pages === res.data.pages) _this.$refs.waterfall.waterfallOver()
+                        else _this.pages ++
+                    })
+            },
             handleAvatarSuccess(res, file) {
                 // this.imageUrl = URL.createObjectURL(file.raw);
                 const  _this =this
@@ -141,7 +179,7 @@
         created(){
             const _this =this
             this.albumId = this.$route.query.albumId
-            this.page(this.albumId,0)
+            this.getData()
         }
     }
 </script>
