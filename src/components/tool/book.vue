@@ -58,7 +58,6 @@
                 if(i > 2) this.articles[i].content = this.articles[i].content.substr(100)
                 this.articleList.push(this.articles[i])
             }
-            console.log(this.articleList)
         }
     }
 </script>

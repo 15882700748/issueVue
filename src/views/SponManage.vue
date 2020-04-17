@@ -1,18 +1,18 @@
 <template>
-    <el-container>
-        <el-header>
+    <el-container style="box-shadow:0px 0px 20px 0 black;height: 600px">
+        <el-header style="background-color:#545c64;color: #fff;">
             <el-row style="position: relative;top: 10px;min-width: 300px;text-align: center">
-                <el-col :span="6">
+                <el-col :span="24" style="max-width: 300px">
                     <el-form :model="ruleForm" :rules="rules" label-position="top" ref="ruleForm" label-width="55px" width="400px"  class="demo-ruleForm">
                         <el-row>
                             <el-col :span="24">
                                 <el-form-item  prop="content">
-                                    <el-input placeholder="请输入内容" v-model="ruleForm.content" class="input-with-select">
-                                        <el-select v-model="ruleForm.select" slot="prepend" placeholder="请选择">
+                                    <el-input placeholder="请输入内容" v-model="ruleForm.content" style="background-color: #545c64;color: white" >
+                                        <el-select v-model="ruleForm.select"  slot="prepend" placeholder="请选择" >
                                             <el-option label="赞助商名" value="sponName"></el-option>
                                             <el-option label="网站" value="site"></el-option>
                                         </el-select>
-                                        <el-button slot="append" icon="el-icon-search" @click="submitForm('ruleForm')">搜索</el-button>
+                                        <el-button slot="append" icon="el-icon-search "  @click="submitForm('ruleForm')">搜索</el-button>
                                     </el-input>
                                 </el-form-item>
                             </el-col>
@@ -27,20 +27,19 @@
             </el-row>
         </el-header>
         <el-main>
-            <div v-if="tableData">
+            <div v-if="tableData" style="width: 100%;height: 440px;position: relative;top: 80px">
                 <SponInfoCardComp  v-for="item in tableData " :ruleForm="ruleForm" :isLast="isLast" :data="item" :currentPage="currentPage" :allItem="tableData" @newAllItem="getNewAllItem">
                 </SponInfoCardComp>
                 <div class="addInfo" v-if="isLast">
                     <i id="addIcon" class="el-icon-plus avatar-uploader-icon" @click="showDialog"></i>
                 </div>
-
                 <el-pagination
                         background
                         layout="prev, pager, next"
                         :total="total"
                         :page-size="pageSize"
                         :current-page="currentPage"
-                        @current-change = "page" style="position: relative;left: 0;top:20px;">
+                        @current-change = "page" style="position: relative;bottom:-190px;height: 50px;line-height: 50px">
                 </el-pagination>
             </div>
             <div v-else>
@@ -125,7 +124,7 @@
         },
         methods: {
             isLastPage(pageSize,currentPage,pages,num){
-               if(num <pageSize || (pages === currentPage)) {
+               if(num <pageSize && (this.totalPage === this.currentPage)) {
                    this.isLast = true
                }else{
                    this.isLast = false
@@ -142,7 +141,7 @@
                     _this.pageSize =resp.data.size
                     _this.total = resp.data.total
                     _this.currentPage = resp.data.current
-                    _this.isLastPage(resp.data.size,resp.data.current,resp.data.pages,_this.tableData.length)
+                    _this.isLastPage(pageSize,resp.data.current,resp.data.pages,_this.tableData.length)
                 })
             },
             handleClick(row) {
@@ -327,5 +326,7 @@
         top: 60%;
         transform: translate(-50%,-60%);
     }
-
+    .input-with-select  {
+        background-color: transparent;
+    }
 </style>

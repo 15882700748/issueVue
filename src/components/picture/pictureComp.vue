@@ -1,6 +1,6 @@
 <template>
-    <div style="width: 100%;height: 600px">
-        <div >
+    <div style="width: 100%;height:100vh" class="top">
+        <div>
             <div class="wrapper">
                 <div class="album">
                     <el-upload
@@ -13,35 +13,26 @@
                     </el-upload>
                 </div>
             </div>
-            <!--<div-->
-                    <!--class="wrapper"-->
-                    <!--v-for="(item,index) in imgs"-->
-                    <!--v-infinite-scroll="load" infinite-scroll-disabled="disabled">-->
-                <!--<div class="album" >-->
-                    <!--<div class="img">-->
-                        <!--<el-image-->
-                                <!--:src="item.imgUrl"-->
-                                <!--fit="cover"-->
-                                <!--:preview-src-list="imgUrlList"></el-image>-->
-                    <!--</div>-->
-                    <!--<span class="albumName">上传日期：{{item.uploadTime}}</span>-->
-                    <!--<span class="albumDelete"><i class="el-icon-circle-close" style="color: red;font-size: 1.5em" @click="deleteImg(item.imgId)"></i></span>-->
-                <!--</div>-->
-            <!--</div>-->
-            <!--<p v-if="loading">加载中...</p>-->
-            <!--<p v-if="noMore">没有更多了</p>-->
+            <div
+                    class="wrapper"
+                    v-for="(item,index) in imgs"
+                    v-infinite-scroll="load" infinite-scroll-disabled="disabled">
+                <div class="album" >
+                    <div class="img">
+                        <el-image
 
-        </div>
-        <vue-waterfall-easy :maxCols="4" ref="waterfall" :imgsArr="imgsArr" @scrollReachBottom="getData">
-            <div class="img-info" slot-scope="props">
-                <p class="some-info">第{{props.index+1}}张图片</p>
-                <p class="som-info">{{props.value.data.uploadTime}}</p>
+                                :src="item.imgUrl"
+                                fit="cover"
+                                :preview-src-list="[item.imgUrl+'']"></el-image>
+                    </div>
+                    <span class="albumName">上传日期：{{item.uploadTime}}</span>
+                    <span class="albumDelete"><i class="el-icon-circle-close" style="color: red;font-size: 1.5em" @click="deleteImg(item.imgId)"></i></span>
+                </div>
             </div>
-            <div slot="waterfall-over">waterfall-over</div>
-        </vue-waterfall-easy>
-        <div >
-
+            <p v-if="loading">加载中...</p>
+            <p v-if="noMore">没有更多了</p>
         </div>
+        <el-backtop target=".top"></el-backtop>
     </div>
 </template>
 
@@ -76,6 +67,27 @@
             }
         },
         methods:{
+            //timeFormat
+            timeFormat(time){
+                let dateee = new Date(time).toJSON();
+                let date = new Date(+new Date(dateee)+8*3600*1000).toISOString().replace(/T/g,' ').replace(/\.[\d]{3}Z/,'')
+                return date;
+            },
+            message(message,type){
+                this.$message({
+                    message:message,
+                    type:type
+                })
+            },
+            clickFn(event, { index, value }) {
+                // 阻止a标签跳转
+                event.preventDefault()
+                // 只有当点击到图片时才进行操作
+                // if (event.target.tagName.toLowerCase() == 'img') {
+                //     console.log('img clicked',index, value)
+                // }
+                this.message(event.target.tagName.toLowerCase(),'info')
+            },
             getData() {
                 let _this = this
                 axios.post("/img/pageQuery?pageNo="+_this.pages+"&pageSize="+8+"&albumId="+_this.albumId) // 真实环境中，后端会根据参数group返回新的图片数组，这里我用一个惊呆json文件模拟
@@ -107,6 +119,7 @@
                     _this.imgs = []
                     _this.imgUrlList = []
                     _this.imgItem = {}
+                    // if(_this.pages < _this.totalPage) _this.pages++
                     _this.page(_this.albumId,0)
                 })
 
@@ -142,6 +155,7 @@
                         if(_this.imgs[i].imgUrl.indexOf("http:")){
                             _this.imgs[i].imgUrl = axios.defaults.baseURL+"/album/"+_this.imgs[i].imgUrl
                         }
+                        _this.imgs[i].uploadTime = _this.timeFormat(_this.imgs[i].uploadTime)
                         _this.imgUrlList.push(_this.imgs[i].imgUrl)
                     }
                     _this.total = resp.data.total
@@ -179,7 +193,8 @@
         created(){
             const _this =this
             this.albumId = this.$route.query.albumId
-            this.getData()
+            this.page(this.albumId,0)
+            // this.getData()
         }
     }
 </script>

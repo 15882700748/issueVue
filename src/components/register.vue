@@ -1,59 +1,63 @@
 <template>
-    <div>
-        <div id="registerBackground">
-            <el-row>
-                <el-col :span="12" :offset="9"><h1>注册</h1></el-col>
-            </el-row>
-        </div>
-        <div >
-            <el-form :label-position="labelPosition" status-icon="true"  :model="ruleForm" :rules="rules" ref="ruleForm" label-width="0px"   class="demo-ruleForm">
-                <el-form-item  prop="account">
-                    <el-input v-model="ruleForm.account" type="text" placeholder="账户" clearable></el-input>
-                </el-form-item>
-                <el-form-item  prop="password">
-                    <el-input type="password" v-model="ruleForm.password" placeholder="密码" show-password clearable></el-input>
-                </el-form-item>
-                <el-form-item prop="confirmPassword">
-                    <el-input type="password" v-model="ruleForm.confirmPassword" placeholder="密码确认" show-password clearable></el-input>
-                </el-form-item>
-                <el-form-item  prop="tel">
-                    <el-input v-model="ruleForm.tel" type="tel" placeholder="电话" clearable></el-input>
-                </el-form-item>
-                <el-form-item  prop="email">
-                    <el-input v-model="ruleForm.email" placeholder="邮箱" clearable></el-input>
-                </el-form-item>
-                <el-form-item  prop="code">
-                    <el-input v-model="ruleForm.code" placeholder="验证码" clearable></el-input>
-                </el-form-item>
-                <el-form-item  prop="img">
-                    <el-row>
-                        <el-col :span="12" :offset="8" style="position: relative;top: 10px;">
-                            <img id="imgIdentifyingCode" style="height:40px; width: 100px; cursor: pointer;" alt="点击更换"
-                                 title="点击更换" :src="identifyCodeSrc" @click="getIdentifyingCode(true)"/>
-                        </el-col>
-                    </el-row>
+    <div style="box-shadow:0px 0px 10px 0 black;height:720px;width: 400px">
+        <el-row style="background-color:#545c64;color: #fff; margin-bottom: 20px">
+            <el-col :span="12" :offset="6"><h2>注册</h2></el-col>
+        </el-row>
+        <el-row>
+            <el-col>
+                <el-form :label-position="labelPosition" status-icon="true"  :model="ruleForm"
+                         :rules="rules" ref="ruleForm" label-width="0px"
+                         style="border: 1px #545c64 solid;width: 350px;margin: 0 auto;
+                                box-shadow:inset 0 0 4px 0 #aaa,0 0 3px 0 #aaa;"
+                         class="demo-ruleForm">
+                    <el-form-item  prop="account">
+                        <el-input style="width: 80%;margin-top: 20px" v-model="ruleForm.account" type="text" placeholder="账户" clearable></el-input>
+                    </el-form-item>
+                    <el-form-item  prop="password">
+                        <el-input style="width: 80%" type="password" v-model="ruleForm.password" placeholder="密码" show-password clearable></el-input>
+                    </el-form-item>
+                    <el-form-item prop="confirmPassword">
+                        <el-input style="width: 80%" type="password" v-model="ruleForm.confirmPassword" placeholder="密码确认" show-password clearable></el-input>
+                    </el-form-item>
+                    <!--<el-form-item  prop="tel">-->
+                        <!--<el-input style="width: 80%" v-model="ruleForm.tel" type="tel" placeholder="电话" clearable></el-input>-->
+                    <!--</el-form-item>-->
+                    <el-form-item  prop="email">
+                        <el-input  style="width: 80%" v-model="ruleForm.email" placeholder="邮箱" clearable></el-input>
+                    </el-form-item>
+                    <el-form-item  prop="code">
+                        <el-input style="width: 80%" v-model="ruleForm.code" placeholder="验证码" clearable></el-input>
+                    </el-form-item>
+                    <el-form-item  prop="img">
+                        <el-row>
+                            <el-col :span="12" :offset="6" style="position: relative;top: 10px;">
+                                <img id="imgIdentifyingCode" style="height:30px; width: 100px; cursor: pointer;" alt="点击更换"
+                                     title="点击更换" :src="identifyCodeSrc" @click="getIdentifyingCode(true)"/>
+                            </el-col>
+                        </el-row>
 
-                </el-form-item>
-                <el-form-item style="position:relative;top: -10px">
-                    <el-row>
-                        <el-col >
-                            <el-button type="primary" @click="submitForm('ruleForm')">登录</el-button>
-                        </el-col>
-                        <el-col >
-                            <el-button  @click="resetForm('ruleForm')">重置</el-button>
-                        </el-col>
-                    </el-row>
-                </el-form-item>
-                <el-form-item>
-                    <el-row>
-                        <el-col :span=8 :offset="8">
-                            <span>已有帐号？</span>
-                            <el-link type="primary" href="/login">请登录</el-link>
-                        </el-col>
-                    </el-row>
-                </el-form-item>
-            </el-form>
-        </div>
+                    </el-form-item>
+                    <el-form-item style="position:relative;top: -10px">
+                        <el-row>
+                            <el-col >
+                                <el-button style="width: 80%" type="primary" @click="submitForm('ruleForm')">登录</el-button>
+                            </el-col>
+                            <el-col >
+                                <el-button style="width: 80%"  @click="resetForm('ruleForm')">重置</el-button>
+                            </el-col>
+                        </el-row>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-row>
+                            <el-col :span=8 :offset="8">
+                                <span>已有帐号？</span>
+                                <el-link type="primary" href="/login">请登录</el-link>
+                            </el-col>
+                        </el-row>
+                    </el-form-item>
+                </el-form>
+            </el-col>
+        </el-row>
     </div>
 
 </template>

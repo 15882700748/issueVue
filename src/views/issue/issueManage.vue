@@ -1,200 +1,196 @@
 <template>
-    <div>
-        <el-container>
-            <el-header>
-                <el-row>
-                    <el-col :span="2" :offset="10">
-                        会议查看
-                    </el-col>
-                    <el-col :span="1" :offset="11">
-                        <i class="el-icon-delete-solid" @click="deleteIssues"></i>
-                    </el-col>
-                </el-row>
-            </el-header>
-            <el-mian>
-                <div>
-                    <el-table size="mini" :data="issueData.data" border style="width: 100%" highlight-current-row ref="articleTable" tooltip-effect="dark"
-                              @selection-change=" handleIssueSelectionChange">
-                        <el-table-column type="index"></el-table-column>
-                        <el-table-column
-                                type="selection"
-                                width="55">
-                        </el-table-column>
-                        <el-table-column v-for="(v,i) in issueData.columns" :prop="v.field" :label="v.title" align="center" >
-                            <template slot-scope="scope">
-                                <template v-if="v.field === 'location'">
-                                    <el-popover
-                                            placement="top-start"
-                                            width="200%"
-                                            trigger="hover"
-                                            @show = initPopverMap(scope.row,scope.$index) @close="onClosePopoverMap">
-                                        <popover-map :location="scope.row.loc"></popover-map>
-                                        <span slot="reference" type="primary" @click="viewLocation(scope.row)">{{scope.row[v.field]}}</span>
-                                    </el-popover>
-                                </template>
-                                <span v-else-if="v.field === 'content'" @click="contentDrawer(scope.row) ">
+    <el-container style="box-shadow:0px 0px 20px 0 black;height: 100hv">
+        <el-header style="background-color:#545c64;color: #fff; margin-bottom: 40px">
+            <el-row>
+                <el-col :span="2" :offset="10">
+                    会议查看
+                </el-col>
+                <el-col :span="1" :offset="11">
+                    <i class="el-icon-delete-solid" @click="deleteIssues"></i>
+                </el-col>
+            </el-row>
+        </el-header>
+        <el-mian>
+            <div>
+                <el-table size="mini" :data="issueData.data" border style="width: 90%;margin: 0 auto;height: 440px" highlight-current-row ref="articleTable" tooltip-effect="dark"
+                          @selection-change=" handleIssueSelectionChange">
+                    <el-table-column type="index"></el-table-column>
+                    <el-table-column
+                            type="selection"
+                            width="55">
+                    </el-table-column>
+                    <el-table-column v-for="(v,i) in issueData.columns" :prop="v.field" :label="v.title" align="center" >
+                        <template slot-scope="scope">
+                            <template v-if="v.field === 'location'">
+                                <el-popover
+                                        placement="top-start"
+                                        width="200%"
+                                        trigger="click"
+                                        @show = initPopverMap(scope.row,scope.$index) @close="onClosePopoverMap">
+                                    <popover-map :location="scope.row.loc"></popover-map>
+                                    <span slot="reference" type="primary" @click="viewLocation(scope.row)">{{scope.row[v.field]}}</span>
+                                </el-popover>
+                            </template>
+                            <span v-else-if="v.field === 'content'" @click="contentDrawer(scope.row) ">
                                     {{scope.row[v.field]}}
                                 </span>
-                                <el-image v-else-if="v.field === 'logo'" style="display: inline-block;width: 50px;height: 50px;"  :src="scope.row[v.field]"></el-image>
-                                <span v-else>
+                            <el-image v-else-if="v.field === 'logo'" style="display: inline-block;width: 50px;height: 50px;"
+                                      :preview-src-list="[scope.row[v.field]+'']"  :src="scope.row[v.field]"></el-image>
+                            <span v-else>
                                     {{scope.row[v.field]}}
                                 </span>
-                            </template>
-                        </el-table-column>
-                        <el-table-column label="管理" align="center">
-                            <template slot-scope="scope">
-                                <el-link type="primary" @click="viewIssue(scope.row.issueId,scope.row.title)">文章管理</el-link>
-                                <el-divider direction="vertical"></el-divider>
-                                <el-link type="primary" @click="viewIssueColum(scope.row.issueId,scope.row.title)">栏目管理</el-link>
-                            </template>
-                        </el-table-column>
-                        <el-table-column label="操作" width="100" align="center">
-                            <template slot-scope="scope">
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="管理" align="center">
+                        <template slot-scope="scope">
+                            <el-link type="primary" @click="viewIssue(scope.row.issueId,scope.row.title)">文章管理</el-link>
+                            <el-divider direction="vertical"></el-divider>
+                            <el-link type="primary" @click="viewIssueColum(scope.row.issueId,scope.row.title)">栏目管理</el-link>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="操作" width="100" align="center">
+                        <template slot-scope="scope">
                             <span class="el-tag el-tag--primary el-tag--mini" style="cursor: pointer; "  @click="updateIssue(scope.row)">
                                 {{scope.row.isSet?'保存':"修改"}}
                             </span>
-                                <span v-if="!scope.row.isSet " class="el-tag el-tag--danger el-tag--mini" style="cursor: pointer;" @click="deleteIssueConfirm(scope.row.issueId)">
+                            <span v-if="!scope.row.isSet " class="el-tag el-tag--danger el-tag--mini" style="cursor: pointer;" @click="deleteIssueConfirm(scope.row.issueId)">
                                     删除
                                 </span>
-                                <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" >
+                            <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" >
                                     取消
                                 </span>
-                            </template>
-                        </el-table-column>
-                        <div slot="append" style="text-align: center;height: 70px;line-height: 70px;cursor: pointer;" >
-                            <div class="el-table-add-row" style="width: 99.2%;" @click="showIssueDialog">
-                                <el-tooltip class="item" effect="dark" content="新增会议" placement="top-start">
-                                    <span>+ 添加</span>
-                                </el-tooltip>
-                            </div>
-                            <el-dialog :top="'0'" :close-on-click-modal="false" style="width: 100%;height: 800px;" title="新增会议" :visible.sync="dialogIssueFormVisible" @closed="addIssueHandleOnClose('addIssueForm')">
-                                <el-form :model="addIssueForm" :rules="addIssueFormRule" ref="addIssueForm">
-                                    <el-row>
-                                        <el-col>
-                                            <el-steps :active="active" finish-status="success" align-center>
-                                                <el-step title="会议图标" ></el-step>
-                                                <el-step title="会议标题" ></el-step>
-                                                <el-step title="会议内容" ></el-step>
-                                                <el-step title="会议时间" ></el-step>
-                                                <el-step title="会议地点" ></el-step>
-                                            </el-steps>
-                                        </el-col>
-                                    </el-row>
-                                    <el-form-item v-show="active === 1">
-                                        <el-upload
-                                                ref="addIssueUpload"
-                                                action="http://localhost:8181/uploadSponIcon"
-                                                :show-file-list="false"
-                                                :on-success="addIssueHandleSuccess"
-                                                :before-upload="addIssueHandleBeforeUpload"
-                                                :auto-upload="true">
-                                            <img v-if="true" style="display: inline-block;width: 100px;height: 100px;position: relative;border-radius: 10px;top: 40px;"  :src="axios.defaults.baseURL+tempPath">
-                                        </el-upload>
-                                    </el-form-item>
-                                    <el-form-item label="" prop="title" v-show="active === 2">
-                                        <el-input v-model="addIssueForm.title" autocomplete="off" placeholder="标题"></el-input>
-                                    </el-form-item>
-                                    <el-form-item label="" prop="content" v-show="active === 3">
-                                        <editor style="height: 150px"  v-model='addIssueForm.content' :init='init'></editor>
-                                    </el-form-item>
-                                    <el-form-item v-show="active === 4" prop="holdupTime">
-                                        <el-date-picker
-                                                v-model="addIssueForm.holdupTime"
-                                                type="datetime"
-                                                placeholder="选择日期时间"
-                                                align="center"
-                                                :picker-options="issuePickerOptions" :editable="false"></el-date-picker>
-                                    </el-form-item>
-                                    <el-form-item label="" prop="location" v-show="active === 5">
-                                        <el-input v-model="addIssueForm.location" autocomplete="off" disabled placeholder="地点"></el-input>
-                                        <searchMap @getLocationInfo="getLocationMsg" ></searchMap>
-                                    </el-form-item>
-                                </el-form>
-                                <div slot="footer" class="dialog-footer" >
-                                    <el-button @click="dialogIssueFormVisible = false">取 消</el-button>
-                                    <el-button type="primary" @click="active--" v-show="active !== 1">上一步</el-button>
-                                    <el-button type="primary" @click="nextItem" v-show="active !== 5">下一步</el-button>
-                                    <el-button type="primary" @click="submitAddIssueForm('addIssueForm')" v-show="active === 5">确 定</el-button>
-                                </div>
-                            </el-dialog>
-                            <el-dialog :top="'0'" :close-on-click-modal="false" style="width: 100%;height: 800px;" title="修改会议" :visible.sync="dialogIssueUpdateVisible" @closed="updateIssueHandleOnClose('updateIssueForm')">
-                                <el-form :model="addIssueForm" :rules="addIssueFormRule" ref="updateIssueForm">
-                                    <el-row>
-                                        <el-col>
-                                            <el-steps :active="active" finish-status="success" align-center>
-                                                <el-step title="会议图标" ></el-step>
-                                                <el-step title="会议标题" ></el-step>
-                                                <el-step title="会议内容" ></el-step>
-                                                <el-step title="会议时间" ></el-step>
-                                                <el-step title="会议地点" ></el-step>
-                                            </el-steps>
-                                        </el-col>
-                                    </el-row>
-                                    <el-form-item v-show="active === 1">
-                                        <el-upload
-                                                ref="updateIssueUpload"
-                                                :action="'http://localhost:8181/uploadIssueLogo'+addIssueForm.issueId"
-                                                :show-file-list="false"
-                                                :on-success="addIssueHandleSuccess"
-                                                :before-upload="addIssueHandleBeforeUpload">
-                                            <img v-if="true" style="display: inline-block;width: 100px;height: 100px;position: relative;border-radius: 10px;top: 40px;"  :src="addIssueForm.logo">
-                                        </el-upload>
-                                    </el-form-item>
-                                    <el-form-item label="" prop="title" v-show="active === 2">
-                                        <el-input v-model="addIssueForm.title" autocomplete="off" placeholder="标题" @input="updateIssueData('title',addIssueForm.issueId)"></el-input>
-                                    </el-form-item>
-                                    <el-form-item label="" prop="content" v-show="active === 3">
-                                        <editor style="height: 150px"  v-model='addIssueForm.con' :init='init' @input="updateIssueData('content',addIssueForm.issueId)"></editor>
-                                    </el-form-item>
-                                    <el-form-item v-show="active === 4" prop="holdupTime">
-                                        <el-date-picker
-                                                v-model="addIssueForm.holdupTime"
-                                                type="datetime"
-                                                placeholder="选择日期时间"
-                                                align="center"
-                                                :picker-options="issuePickerOptions" :editable="false" @input="updateIssueData('holdupTime',addIssueForm.issueId)"></el-date-picker>
-                                    </el-form-item>
-                                    <el-form-item label="" prop="location" v-show="active === 5">
-                                        <el-input v-model="addIssueForm.location" autocomplete="off" disabled placeholder="地点"></el-input>
-                                        <template>
-                                            <searchMap :issueId="addIssueForm.issueId" :loc="addIssueForm.loc" @getLocationInfo="getLocationMsg" ref="searchMap"></searchMap>
-                                        </template>
-                                    </el-form-item>
-                                </el-form>
-                                <div slot="footer" class="dialog-footer" >
-
-                                    <el-button type="primary" @click="active--" v-show="active !== 1">上一步</el-button>
-                                    <el-button type="primary" @click="nextItem" v-show="active !== 5">下一步</el-button>
-                                    <el-button type="error" @click="closeUpdateDialog">关闭</el-button>
-                                </div>
-                            </el-dialog>
-                            <el-drawer
-                                    :with-header="false"
-                                    :visible.sync="viewIssuedetailsVisible"
-                                    direction="rtl">
-                                <strong>标题：</strong>{{issueDetails.title}}
-                                <el-divider></el-divider>
-                                <strong>内容：</strong>
-                                <span v-html="issueDetails.content"></span>
-                            </el-drawer>
+                        </template>
+                    </el-table-column>
+                    <div slot="append" style="text-align: center;height: 50px;line-height: 50px;cursor: pointer;" >
+                        <div class="el-table-add-row" style="width: 99.2%;" @click="showIssueDialog">
+                            <el-tooltip class="item" effect="dark" content="新增会议" placement="top-start">
+                                <span>+ 添加</span>
+                            </el-tooltip>
                         </div>
-                    </el-table>
+                        <el-dialog :top="'0'" :close-on-click-modal="false" style="width: 100%;height: 800px;" title="新增会议" :visible.sync="dialogIssueFormVisible" @closed="addIssueHandleOnClose('addIssueForm')">
+                            <el-form :model="addIssueForm" :rules="addIssueFormRule" ref="addIssueForm">
+                                <el-row>
+                                    <el-col>
+                                        <el-steps :active="active" finish-status="success" align-center>
+                                            <el-step title="会议图标" ></el-step>
+                                            <el-step title="会议标题" ></el-step>
+                                            <el-step title="会议内容" ></el-step>
+                                            <el-step title="会议时间" ></el-step>
+                                            <el-step title="会议地点" ></el-step>
+                                        </el-steps>
+                                    </el-col>
+                                </el-row>
+                                <el-form-item v-show="active === 1">
+                                    <el-upload
+                                            ref="addIssueUpload"
+                                            action="http://localhost:8181/uploadSponIcon"
+                                            :show-file-list="false"
+                                            :on-success="addIssueHandleSuccess"
+                                            :before-upload="addIssueHandleBeforeUpload"
+                                            :auto-upload="true">
+                                        <img v-if="true" style="display: inline-block;width: 100px;height: 100px;position: relative;border-radius: 10px;top: 40px;"  :src="axios.defaults.baseURL+tempPath">
+                                    </el-upload>
+                                </el-form-item>
+                                <el-form-item label="" prop="title" v-show="active === 2">
+                                    <el-input v-model="addIssueForm.title" autocomplete="off" placeholder="标题"></el-input>
+                                </el-form-item>
+                                <el-form-item label="" prop="content" v-show="active === 3">
+                                    <editor style="height: 150px"  v-model='addIssueForm.content' :init='init'></editor>
+                                </el-form-item>
+                                <el-form-item v-show="active === 4" prop="holdupTime">
+                                    <el-date-picker
+                                            v-model="addIssueForm.holdupTime"
+                                            type="datetime"
+                                            placeholder="选择日期时间"
+                                            align="center"
+                                            :picker-options="issuePickerOptions" :editable="false"></el-date-picker>
+                                </el-form-item>
+                                <el-form-item label="" prop="location" v-show="active === 5">
+                                    <el-input v-model="addIssueForm.location" autocomplete="off" disabled placeholder="地点"></el-input>
+                                    <searchMap @getLocationInfo="getLocationMsg" ></searchMap>
+                                </el-form-item>
+                            </el-form>
+                            <div slot="footer" class="dialog-footer" >
+                                <el-button @click="dialogIssueFormVisible = false">取 消</el-button>
+                                <el-button type="primary" @click="active--" v-show="active !== 1">上一步</el-button>
+                                <el-button type="primary" @click="nextItem" v-show="active !== 5">下一步</el-button>
+                                <el-button type="primary" @click="submitAddIssueForm('addIssueForm')" v-show="active === 5">确 定</el-button>
+                            </div>
+                        </el-dialog>
+                        <el-dialog :top="'0'" :close-on-click-modal="false" style="width: 100%;height: 800px;" title="修改会议" :visible.sync="dialogIssueUpdateVisible" @closed="updateIssueHandleOnClose('updateIssueForm')">
+                            <el-form :model="addIssueForm" :rules="addIssueFormRule" ref="updateIssueForm">
+                                <el-row>
+                                    <el-col>
+                                        <el-steps :active="active" finish-status="success" align-center>
+                                            <el-step title="会议图标" ></el-step>
+                                            <el-step title="会议标题" ></el-step>
+                                            <el-step title="会议内容" ></el-step>
+                                            <el-step title="会议时间" ></el-step>
+                                            <el-step title="会议地点" ></el-step>
+                                        </el-steps>
+                                    </el-col>
+                                </el-row>
+                                <el-form-item v-show="active === 1">
+                                    <el-upload
+                                            ref="updateIssueUpload"
+                                            :action="'http://localhost:8181/uploadIssueLogo'+addIssueForm.issueId"
+                                            :show-file-list="false"
+                                            :on-success="addIssueHandleSuccess"
+                                            :before-upload="addIssueHandleBeforeUpload">
+                                        <img v-if="true" style="display: inline-block;width: 100px;height: 100px;position: relative;border-radius: 10px;top: 40px;"  :src="addIssueForm.logo">
+                                    </el-upload>
+                                </el-form-item>
+                                <el-form-item label="" prop="title" v-show="active === 2">
+                                    <el-input v-model="addIssueForm.title" autocomplete="off" placeholder="标题" @input="updateIssueData('title',addIssueForm.issueId)"></el-input>
+                                </el-form-item>
+                                <el-form-item label="" prop="content" v-show="active === 3">
+                                    <editor style="height: 150px"  v-model='addIssueForm.con' :init='init' @input="updateIssueData('content',addIssueForm.issueId)"></editor>
+                                </el-form-item>
+                                <el-form-item v-show="active === 4" prop="holdupTime">
+                                    <el-date-picker
+                                            v-model="addIssueForm.holdupTime"
+                                            type="datetime"
+                                            placeholder="选择日期时间"
+                                            align="center"
+                                            :picker-options="issuePickerOptions" :editable="false" @input="updateIssueData('holdupTime',addIssueForm.issueId)"></el-date-picker>
+                                </el-form-item>
+                                <el-form-item label="" prop="location" v-show="active === 5">
+                                    <el-input v-model="addIssueForm.location" autocomplete="off" disabled placeholder="地点"></el-input>
+                                    <template>
+                                        <searchMap :issueId="addIssueForm.issueId" :loc="addIssueForm.loc" @getLocationInfo="getLocationMsg" ref="searchMap"></searchMap>
+                                    </template>
+                                </el-form-item>
+                            </el-form>
+                            <div slot="footer" class="dialog-footer" >
 
-                </div>
-                <div>
-                    <el-pagination
-                            background
-                            layout="prev, pager, next"
-                            :total="total"
-                            :page-size="pageSize"
-                            :current-page="currentPage"
-                            @current-change = "page" style="position: relative;left: 0;top:20px;">
-                    </el-pagination>
-                </div>
-            </el-mian>
-        </el-container>
+                                <el-button type="primary" @click="active--" v-show="active !== 1">上一步</el-button>
+                                <el-button type="primary" @click="nextItem" v-show="active !== 5">下一步</el-button>
+                                <el-button type="error" @click="closeUpdateDialog">关闭</el-button>
+                            </div>
+                        </el-dialog>
+                        <el-drawer
+                                :with-header="false"
+                                :visible.sync="viewIssuedetailsVisible"
+                                direction="rtl">
+                            <strong>标题：</strong>{{issueDetails.title}}
+                            <el-divider></el-divider>
+                            <strong>内容：</strong>
+                            <span v-html="issueDetails.content"></span>
+                        </el-drawer>
+                    </div>
+                </el-table>
 
-    </div>
+            </div>
+            <el-pagination
+                    background
+                    layout="prev, pager, next"
+                    :total="total"
+                    :page-size="pageSize"
+                    :current-page="currentPage"
+                    @current-change = "page" style="position: relative;bottom:-10px;height: 50px;line-height: 50px">
+            </el-pagination>
+        </el-mian>
+    </el-container>
 </template>
 
 <script>
@@ -226,11 +222,11 @@
                     sel: null,//选中行
                     isUpdate:true,
                     columns: [
-                        { field: "logo", title: "图标" },
+                        { field: "logo", title: "图标(点击查看logo)" },
                         { field: "title", title: "标题" },
                         { field: "content", title: "内容(可点击详情)"},
                         { field: "holdupTime", title: "举办时间"},
-                        { field: "location", title: "举办地点"},
+                        { field: "location", title: "举办地点(可点击详情)"},
                     ],
                     data: [],
                 },
@@ -402,6 +398,12 @@
                       break;
               }
             },
+            timeFormat(time){
+                let dateee = new Date(time).toJSON();
+                let date = new Date(+new Date(dateee)+8*3600*1000).toISOString().replace(/T/g,' ').replace(/\.[\d]{3}Z/,'')
+                date = date.toString()
+                return date.substr(0,11);
+            },
             page(pageNo, pageSize=5){
               const  _this = this
               axios.post("/issue/queryPage?pageNo="+pageNo+"&pageSize="+pageSize).then(function (resp) {
@@ -410,6 +412,7 @@
                       _this.issueData.data[i].isSet = false;
                       _this.issueData.data[i].con = _this.issueData.data[i].content
                       _this.issueData.data[i].content = _this.subContent(_this.issueData.data[i].content)
+                      _this.issueData.data[i].holdupTime = _this.timeFormat(_this.issueData.data[i].holdupTime)
                       _this.issueData.data[i].logo= axios.defaults.baseURL+'issue/'+_this.issueData.data[i].logo
                       _this.issueData.data[i].loc = _this.issueData.data[i].location
                       _this.issueData.data[i].popoverLocation = JSON.parse(_this.issueData.data[i].location)

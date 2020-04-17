@@ -1,5 +1,5 @@
 <template>
-    <el-container>
+    <el-container >
         <el-main style="width: 100%;height: 500px;overflow-y:scroll">
             <el-row>
                 <el-col>
@@ -27,7 +27,7 @@
                                 v-for="(item,index) in albums"
                                 v-infinite-scroll="load" infinite-scroll-disabled="disabled">
                             <div class="album" >
-                                <img :src="axios.defaults.baseURL+'album/'+item.imgUrl" class="img" @click="pictureView(item.albumId)">
+                                <img :src="item.imgUrl" class="img" @click="pictureView(item.albumId)" />
                                 <span class="albumName">相册名称：{{item.albumName}}</span>
                                 <span class="albumDesc">描述：{{item.albumDesc}}</span>
                                 <span class="albumDelete"><i class="el-icon-circle-close" @click="deleteAlbum(item.albumId)"></i></span>
@@ -66,7 +66,8 @@
         data(){
             return {
                 albums:[],
-                albumItem:{},
+                albumItem:{
+                },
                 addAlbumForm:{
                     albumName:'',
                     albumDesc:''
@@ -118,22 +119,21 @@
 
                 return img.imgUrl
             },
-            page(pageNo,pageSize=2){
+            page: async function(pageNo,pageSize=2){
                 const  _this = this
-              axios.post("/album/pageQuery?pageNo="+pageNo+"&pageSize="+pageSize).then(function (resp) {
-                  _this.albumItem =Object.assign({},_this.albumItem,resp.data.records)
+              await axios.post("/album/pageQuery?pageNo="+pageNo+"&pageSize="+pageSize).then(function (resp) {
+                  // _this.albumItem =Object.assign({},_this.albumItem,resp.data.records)
                   _this.albums = _this.albums.concat(resp.data.records)
-                  for(let i=0; i<_this.albums.length; i++){
-                      axios.post("/album/getFisrtPicture",{'albumId':_this.albums[i].albumId}).then(function (resp) {
-                          _this.albums[i].imgUrl = resp.data.img.imgUrl
-                      })
-                  }
-
                   // _this.albums = resp.data.records
                   _this.total = resp.data.total
                   _this.totalPage = resp.data.pages
                   _this.currentPage = resp.data.current
               })
+                for(let i=0; i<_this.albums.length; i++){
+                    await axios.post("/album/getFisrtPicture",{'albumId':_this.albums[i].albumId}).then(resp => {
+                        _this.albums[i].imgUrl = axios.defaults.baseURL+'album/'+resp.data.img.imgUrl
+                    })
+                }
             },
             load(){
                 this.loading = true

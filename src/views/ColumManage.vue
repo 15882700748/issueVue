@@ -1,119 +1,115 @@
 <template>
-    <div>
-        <el-container>
-            <el-header>
-                <el-row>
-                    <el-col :span="1" >
-                        <i class="el-icon-back" @click="backIssue"></i>
-                    </el-col>
-                    <el-col :span="8" :offset="6">
-                        管理:<strong>{{issueTitle}}</strong>会议栏目
-                    </el-col>
-                    <el-col :span="1"  :offset="8">
-                        <i class="el-icon-delete-solid" @click="deleteColumns" ></i>
-                    </el-col>
-                </el-row>
-            </el-header>
-            <el-main>
-                <div>
-                    <el-table size="mini" :data="columnData.data" border style="width: 100%" highlight-current-row ref="articleTable" tooltip-effect="dark"
-                              @selection-change=" handleColumSelectionChange">
-                        <el-table-column type="index"></el-table-column>
-                        <el-table-column
-                                type="selection"
-                                width="55">
-                        </el-table-column>
-                        <el-table-column v-for="(v,i) in columnData.columns" :prop="v.field" :label="v.title" align="center" >
-                            <template slot-scope="scope">
+    <el-container style="box-shadow:0px 0px 20px 0 black;height: 100hv">
+        <el-header style="background-color:#545c64;color: #fff; margin-bottom: 40px">
+            <el-row>
+                <el-col :span="1" >
+                    <i class="el-icon-back" @click="backIssue"></i>
+                </el-col>
+                <el-col :span="8" :offset="6">
+                    管理:<strong>{{issueTitle}}</strong>会议栏目
+                </el-col>
+                <el-col :span="1"  :offset="8">
+                    <i class="el-icon-delete-solid" @click="deleteColumns" ></i>
+                </el-col>
+            </el-row>
+        </el-header>
+        <el-main>
+            <div>
+                <el-table size="mini" :data="columnData.data" border style="width: 90%;margin: 0 auto;height: 440px" highlight-current-row ref="articleTable" tooltip-effect="dark"
+                          @selection-change=" handleColumSelectionChange">
+                    <el-table-column type="index"></el-table-column>
+                    <el-table-column
+                            type="selection"
+                            width="55">
+                    </el-table-column>
+                    <el-table-column v-for="(v,i) in columnData.columns" :prop="v.field" :label="v.title" align="center" >
+                        <template slot-scope="scope">
                                 <span v-if="v.field !== 'con'">
                                     {{scope.row[v.field]}}
                                 </span>
-                                <el-popover v-else
+                            <el-popover v-else
                                         placement="top-start"
                                         width="100%"
                                         trigger="hover"
                                         @show = initPopoverContent(scope.row) @close="onClosePopoverContent">
-                                    <strong>栏目名称：</strong>
-                                    <span>{{scope.row.name}}</span>
-                                    <el-divider></el-divider>
-                                    <strong>栏目内容：</strong>
-                                    <span v-html="scope.row.content"></span>
-                                    <el-divider></el-divider>
-                                    <span slot="reference" type="primary" >{{scope.row[v.field]}}</span>
-                                </el-popover>
-                            </template>
-                        </el-table-column>
-                        <el-table-column label="操作" width="100" align="center">
-                            <template slot-scope="scope">
+                                <strong>栏目名称：</strong>
+                                <span>{{scope.row.name}}</span>
+                                <el-divider></el-divider>
+                                <strong>栏目内容：</strong>
+                                <span v-html="scope.row.content"></span>
+                                <el-divider></el-divider>
+                                <span slot="reference" type="primary" >{{scope.row[v.field]}}</span>
+                            </el-popover>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="操作" width="100" align="center">
+                        <template slot-scope="scope">
                             <span class="el-tag el-tag--primary el-tag--mini" style="cursor: pointer; "  @click="updateColumn(scope.row)">
                                 {{scope.row.isSet?'保存':"修改"}}
                             </span>
-                                <span v-if="!scope.row.isSet " class="el-tag el-tag--danger el-tag--mini" style="cursor: pointer;" @click="deleteColumnConfirm(scope.row.columId)">
+                            <span v-if="!scope.row.isSet " class="el-tag el-tag--danger el-tag--mini" style="cursor: pointer;" @click="deleteColumnConfirm(scope.row.columId)">
                                     删除
                                 </span>
-                                <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" >
+                            <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" >
                                     取消
                                 </span>
-                            </template>
-                        </el-table-column>
-                        <div slot="append" style="text-align: center;height: 70px;line-height: 70px;cursor: pointer;" >
-                            <div class="el-table-add-row" style="width: 99.2%;" @click="showColumnDialog">
-                                <el-tooltip class="item" effect="dark" content="新增栏目" placement="top-start">
-                                    <span>+ 添加</span>
-                                </el-tooltip>
-                            </div>
-                            <el-dialog :top="'0'" :close-on-click-modal="false" style="width: 100%;height: 800px;" title="新增栏目"
-                                       :visible.sync="dialogColumnFormVisible" @closed="addColumnHandleOnClose('addColumnForm')">
-                                <el-form :model="addColumnForm" :rules="addColumnFormRule" ref="addColumnForm">
-                                    <el-form-item label="" prop="title" >
-                                        <el-input v-model="addColumnForm.name" autocomplete="off" placeholder="栏目名称"></el-input>
-                                    </el-form-item>
-                                    <el-form-item label="" prop="content" >
-                                        <kind-editor id="editor_id" height="500px" width="100%" :content.sync="addColumnForm.content"
-                                                     pluginsPath="kindeditor/plugins/"
-                                                     :loadStyleMode="false"
-                                                     @on-content-change="onContentChange"></kind-editor>
-                                    </el-form-item>
-                                </el-form>
-                                <div slot="footer" class="dialog-footer" >
-                                    <el-button @click="dialogColumnFormVisible = false">取 消</el-button>
-                                    <el-button type="primary" @click="submitAddColumnForm('addColumnForm')">提交</el-button>
-                                </div>
-                            </el-dialog>
-                            <el-dialog :top="'0'" :close-on-click-modal="false" style="width: 100%;height: 800px;" title="修改栏目"
-                                       :visible.sync="dialogColumnUpdateFormVisible" @closed="updateColumnHandleOnClose('updateColumnForm')">
-                                <el-form :model="addColumnForm" :rules="addColumnFormRule" ref="updateColumnForm">
-                                    <el-form-item label="" prop="name" >
-                                        <el-input v-model="addColumnForm.name" autocomplete="off" placeholder="栏目名称"></el-input>
-                                    </el-form-item>
-                                    <el-form-item label="" prop="content" >
-                                        <kind-editor id="editor" height="500px" width="100%" :content.sync="editorText"
-                                                     pluginsPath="kindeditor/plugins/"
-                                                     :loadStyleMode="false"
-                                                     @on-content-change="onContentChange"></kind-editor>
-                                    </el-form-item>
-                                </el-form>
-                                <div slot="footer" class="dialog-footer" >
-                                    <el-button @click="dialogColumnUpdateFormVisible = false">取 消</el-button>
-                                    <el-button type="primary" @click="submitUpdateColumnForm('updateColumnForm')">提交</el-button>
-                                </div>
-                            </el-dialog>
+                        </template>
+                    </el-table-column>
+                    <div slot="append" style="text-align: center;height: 50px;line-height: 50px;cursor: pointer;" >
+                        <div class="el-table-add-row" style="width: 99.2%;" @click="showColumnDialog">
+                            <el-tooltip class="item" effect="dark" content="新增栏目" placement="top-start">
+                                <span>+ 添加</span>
+                            </el-tooltip>
                         </div>
-                    </el-table>
-                </div>
-                <div>
-                    <el-pagination
-                            background
-                            layout="prev, pager, next"
-                            :total="total"
-                            :page-size="pageSize"
-                            :current-page="currentPage"
-                            @current-change = "page" style="position: relative;left: 0;top:20px;">
-                    </el-pagination>
-                </div>
-            </el-main>
-        </el-container>
-    </div>
+                        <el-dialog :top="'0'" :close-on-click-modal="false" style="width: 100%;height: 800px;" title="新增栏目"
+                                   :visible.sync="dialogColumnFormVisible" @closed="addColumnHandleOnClose('addColumnForm')">
+                            <el-form :model="addColumnForm" :rules="addColumnFormRule" ref="addColumnForm">
+                                <el-form-item label="" prop="title" >
+                                    <el-input v-model="addColumnForm.name" autocomplete="off" placeholder="栏目名称"></el-input>
+                                </el-form-item>
+                                <el-form-item label="" prop="content" >
+                                    <kind-editor id="editor_id" height="500px" width="100%" :content.sync="addColumnForm.content"
+                                                 pluginsPath="kindeditor/plugins/"
+                                                 :loadStyleMode="false"
+                                                 @on-content-change="onContentChange"></kind-editor>
+                                </el-form-item>
+                            </el-form>
+                            <div slot="footer" class="dialog-footer" >
+                                <el-button @click="dialogColumnFormVisible = false">取 消</el-button>
+                                <el-button type="primary" @click="submitAddColumnForm('addColumnForm')">提交</el-button>
+                            </div>
+                        </el-dialog>
+                        <el-dialog :top="'0'" :close-on-click-modal="false" style="width: 100%;height: 800px;" title="修改栏目"
+                                   :visible.sync="dialogColumnUpdateFormVisible" @closed="updateColumnHandleOnClose('updateColumnForm')">
+                            <el-form :model="addColumnForm" :rules="addColumnFormRule" ref="updateColumnForm">
+                                <el-form-item label="" prop="name" >
+                                    <el-input v-model="addColumnForm.name" autocomplete="off" placeholder="栏目名称"></el-input>
+                                </el-form-item>
+                                <el-form-item label="" prop="content" >
+                                    <kind-editor id="editor" height="500px" width="100%" :content.sync="editorText"
+                                                 pluginsPath="kindeditor/plugins/"
+                                                 :loadStyleMode="false"
+                                                 @on-content-change="onContentChange"></kind-editor>
+                                </el-form-item>
+                            </el-form>
+                            <div slot="footer" class="dialog-footer" >
+                                <el-button @click="dialogColumnUpdateFormVisible = false">取 消</el-button>
+                                <el-button type="primary" @click="submitUpdateColumnForm('updateColumnForm')">提交</el-button>
+                            </div>
+                        </el-dialog>
+                    </div>
+                </el-table>
+            </div>
+            <el-pagination
+                    background
+                    layout="prev, pager, next"
+                    :total="total"
+                    :page-size="pageSize"
+                    :current-page="currentPage"
+                    @current-change = "page" style="position: relative;bottom:-10px;height: 50px;line-height: 50px">
+            </el-pagination>
+        </el-main>
+    </el-container>
 </template>
 
 <script>
@@ -187,6 +183,12 @@
             backIssue(){
                 this.$router.push("/issueManage")
             },
+            timeFormat(time,index,length){
+                let dateee = new Date(time).toJSON();
+                let date = new Date(+new Date(dateee)+8*3600*1000).toISOString().replace(/T/g,' ').replace(/\.[\d]{3}Z/,'')
+                date = date.toString()
+                return date.substr(index,length);
+            },
             page(pageNo,pageSize=10){
                 const  _this = this
                 let id = this.issueId
@@ -194,6 +196,7 @@
                     _this.columnData.data = resp.data.records
                     for(let i=0; i<_this.columnData.data.length;i++){
                         _this.columnData.data[i].isSet = false;
+                        _this.columnData.data[i].creatTime = _this.timeFormat(_this.columnData.data[i].creatTime)
                         _this.columnData.data[i].con = _this.subContent(_this.columnData.data[i].content)
                     }
                     _this.total = resp.data.total

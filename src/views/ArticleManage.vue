@@ -1,43 +1,60 @@
 <template>
-    <div>
-        <el-container>
-            <el-header>
-                <el-row>
-                    <el-col :span="1" >
-                        <i class="el-icon-back" @click="backIssue"></i>
-                    </el-col>
-                    <el-col :span="8" :offset="6">
-                        查看:<strong>{{issueTitle}}</strong>会议文章
-                    </el-col>
-                    <el-col :span="1"  :offset="8">
-                        <i class="el-icon-delete-solid" @click="deleteArticles"></i>
-                    </el-col>
-                </el-row>
-            </el-header>
-            <el-mian>
-                <div>
-                    <el-table size="mini" :data="master_user.data" border style="width: 100%" highlight-current-row ref="articleTable" tooltip-effect="dark"
-                              @selection-change="handleSelectionChange">
-                        <el-table-column type="index"></el-table-column>
-                        <el-table-column
-                                type="selection"
-                                width="55">
-                        </el-table-column>
-                        <el-table-column v-for="(v,i) in master_user.columns" :prop="v.field" :label="v.title" >
-                            <template slot-scope="scope">
+    <el-container style="box-shadow:0px 0px 20px 0 black;height: 100hv">
+        <el-header style="background-color:#545c64;color: #fff; margin-bottom: 40px">
+            <el-row>
+                <el-col :span="1" >
+                    <i class="el-icon-back" @click="backIssue"></i>
+                </el-col>
+                <el-col :span="8" >
+                    查看:<strong>{{issueTitle}}</strong>会议文章
+                </el-col>
+                <el-col :span="8" :offset="5" style="max-width: 400px;position: relative;top: 10px;">
+                    <el-form :model="articleForm" :rules="articleFormRule" label-position="top" ref="articleForm" label-width="55px" width="400px"  class="demo-ruleForm">
+                        <el-row>
+                            <el-col :span="24">
+                                <el-form-item  prop="content">
+                                    <el-input placeholder="请输入内容" clearable v-model="articleForm.content" style="background-color: #545c64;color: white" >
+                                        <el-select v-model="articleForm.select" style="width: 100px"  slot="prepend" placeholder="请选择" >
+                                            <el-option label="标题" value="title"></el-option>
+                                            <el-option label="内容" value="content"></el-option>
+                                        </el-select>
+                                        <el-button slot="append" icon="el-icon-search "  @click="searchArticle('articleForm')">搜索</el-button>
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                    </el-form>
+                </el-col>
+                <el-col :span="1"  :offset="1">
+                    <i class="el-icon-delete-solid" @click="deleteArticles"></i>
+                </el-col>
+            </el-row>
+
+        </el-header>
+        <el-mian>
+            <div>
+                <el-table align="center" size="mini" :data="master_user.data" border style="width: 90%;margin: 0 auto;height: 440px" highlight-current-row ref="articleTable" tooltip-effect="dark"
+                          @selection-change="handleSelectionChange">
+                    <el-table-column type="index"></el-table-column>
+                    <el-table-column
+                            type="selection"
+                            width="55">
+                    </el-table-column>
+                    <el-table-column v-for="(v,i) in master_user.columns" :prop="v.field" :label="v.title" align="center">
+                        <template slot-scope="scope">
                                 <span v-if="scope.row.isSet">
                                     <el-date-picker v-if="v.field === 'realseTime' || v.field === 'holdupTime'"
-                                            v-model="master_user.sel[v.field]" :disabled="v.field === 'realseTime'"
-                                            type="datetime"
-                                            placeholder="选择日期时间"
-                                            align="center"
-                                            :picker-options="pickerOptions" :editable="false"></el-date-picker>
+                                                    v-model="master_user.sel[v.field]" :disabled="v.field === 'realseTime'"
+                                                    type="datetime"
+                                                    placeholder="选择日期时间"
+                                                    align="center"
+                                                    :picker-options="pickerOptions" :editable="false"></el-date-picker>
                                     <el-button type="text" v-else-if="v.field === 'content'">
                                         {{scope.row[v.field]}}
                                         <i class="el-icon-edit" v-if="master_user.isUpdate" @click="showDialogTinymecVisible(scope.row,scope.row.articleId,'update')"></i>
                                         <i class="el-icon-edit" v-else @click="showDialogTinymecVisible(scope.row,scope.row.articleId,'add')"></i>
                                         <el-dialog  title="新增赞助商" :visible.sync="dialogTinymecVisible" :close-on-click-modal="!dialogTinymecVisible"
-                                                  center  @closed="HandleOnClose(scope.row)">
+                                                    center  @closed="HandleOnClose(scope.row)">
                                             <editor  v-model='master_user.sel[v.field]' :init='init'></editor>
                                             <span slot="footer" class="dialog-footer">
                                                 <el-button @click="dialogTinymecVisible = false">取 消</el-button>
@@ -47,59 +64,55 @@
                                     </el-button>
                                     <el-input v-else size="mini" placeholder="请输入内容" v-model="master_user.sel[v.field]"></el-input>
                                 </span>
-                                <span v-else-if="v.field !== 'content'">{{scope.row[v.field]}}</span>
-                                <el-popover v-else
-                                         :enterable="false"
+                            <span v-else-if="v.field !== 'content'">{{scope.row[v.field]}}</span>
+                            <el-popover v-else
+                                        :enterable="false"
                                         width="100%"
                                         trigger="hover" placement="top" :visible-arrow="true"
-                                         @show="getCeilContent(scope.row.articleId)">
-                                    <div>
-                                        <strong>标题：</strong>{{hoverTitle}}
-                                        <p><strong>内容：</strong><span v-html="hoverContent"></span></p>
-                                    </div>
-                                    <sapn slot="reference">
-                                        <span v-html="scope.row[v.field]"></span>
-                                    </sapn>
-                                </el-popover>
-                            </template>
-                        </el-table-column>
-                        <el-table-column label="操作" width="100">
-                            <template slot-scope="scope">
+                                        @show="getCeilContent(scope.row.articleId)">
+                                <div>
+                                    <strong>标题：</strong>{{hoverTitle}}
+                                    <p><strong>内容：</strong><span v-html="hoverContent"></span></p>
+                                </div>
+                                <sapn slot="reference">
+                                    <span v-html="scope.row[v.field]"></span>
+                                </sapn>
+                            </el-popover>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="操作" width="100">
+                        <template slot-scope="scope">
                             <span class="el-tag el-tag--primary el-tag--mini" style="cursor: pointer; " @click="pwdChange(scope.row,scope.$index,true)">
                                 {{scope.row.isSet?'保存':"修改"}}
                             </span>
-                                <span v-if="!scope.row.isSet " class="el-tag el-tag--danger el-tag--mini" style="cursor: pointer;" @click="deleteArticleConfirm(scope.row.articleId)">
+                            <span v-if="!scope.row.isSet " class="el-tag el-tag--danger el-tag--mini" style="cursor: pointer;" @click="deleteArticleConfirm(scope.row.articleId)">
                                 删除
                             </span>
-                                <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" @click="pwdChange(scope.row,scope.$index,false)">
+                            <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" @click="pwdChange(scope.row,scope.$index,false)">
                                 取消
                             </span>
-                            </template>
-                        </el-table-column>
-                        <div slot="append" style="text-align: center;height: 70px;line-height: 70px">
-                            <div class="el-table-add-row" style="width: 99.2%;" @click="addMasterUser">
-                                <el-tooltip class="item" effect="dark" content="新增文章" placement="top-start">
-                                    <span>+ 添加</span>
-                                </el-tooltip>
-                            </div>
+                        </template>
+                    </el-table-column>
+                    <div slot="append" style="text-align: center;height: 50px;line-height: 50px">
+                        <div class="el-table-add-row" style="width: 99.2%;" @click="addMasterUser">
+                            <el-tooltip class="item" effect="dark" content="新增文章" placement="top-start">
+                                <span>+ 添加</span>
+                            </el-tooltip>
                         </div>
-                    </el-table>
+                    </div>
+                </el-table>
 
-                </div>
-                <div>
-                    <el-pagination
-                            background
-                            layout="prev, pager, next"
-                            :total="total"
-                            :page-size="pageSize"
-                            :current-page="currentPage"
-                            @current-change = "page" style="position: relative;left: 0;top:20px;">
-                    </el-pagination>
-                </div>
-            </el-mian>
-        </el-container>
-
-    </div>
+            </div>
+            <el-pagination
+                    background
+                    layout="prev, pager, next"
+                    :total="total"
+                    :page-size="pageSize"
+                    :current-page="currentPage"
+                    @current-change = "page" style="position: relative;bottom:-10px;height: 50px;line-height: 50px">
+            </el-pagination>
+        </el-mian>
+    </el-container>
 </template>
 
 <script>
@@ -151,6 +164,11 @@
                     ],
                     data: [],
                 },
+                articleForm : {
+                  select : 'title',
+                  content : ''
+                },
+                articleFormRule:{},
                 addArticleForm:{
                     title:'',
                     content:'',
@@ -221,6 +239,18 @@
             }
         },
         methods: {
+            searchArticle(formName){
+                this.$refs[formName].validate((valid) => {
+                    const _this = this;
+                    // let formData = {}
+                    // formData[this.ruleForm.select] = this.ruleForm.content
+                    this.page(0);
+                    _this.$message({
+                        message:'搜索成功',
+                        type:'success'
+                    })
+                });
+            },
             backIssue(){
               this.$router.push("/issueManage")
             },
@@ -267,13 +297,21 @@
               }
               return false;
             },
-            page(pageNo,pageSize=10,){
+            timeFormat(time,index,length){
+                let dateee = new Date(time).toJSON();
+                let date = new Date(+new Date(dateee)+8*3600*1000).toISOString().replace(/T/g,' ').replace(/\.[\d]{3}Z/,'')
+                date = date.toString()
+                return date.substr(index,length);
+            },
+            page(pageNo,pageSize=10){
                 const  _this = this
                 let id = window.sessionStorage.getItem("issueId")
-                axios.post("/article/page?pageNo="+pageNo+"&pageSize="+pageSize+"&issueId="+id).then(function (resp) {
+                axios.post("/article/page?pageNo="+pageNo+"&pageSize="+pageSize+"&issueId="+id+'&'+this.articleForm.select+"="+this.articleForm.content).then(function (resp) {
                     _this.master_user.data = resp.data.records
                    for(let i=0; i<_this.master_user.data.length;i++){
                        _this.master_user.data[i].isSet = false;
+                       _this.master_user.data[i].realseTime = _this.timeFormat(_this.master_user.data[i].realseTime,0,16)
+                       _this.master_user.data[i].holdupTime = _this.timeFormat(_this.master_user.data[i].holdupTime,0,11)
                        _this.master_user.data[i].content = _this.subContent(_this.master_user.data[i].content)
                    }
                     _this.total = resp.data.total

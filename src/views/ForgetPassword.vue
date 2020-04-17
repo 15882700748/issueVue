@@ -1,47 +1,42 @@
 <template>
-    <div>
-        <div id="back">
-            <BackComp></BackComp>
-        </div>
-        <div>
-            <div id="ForgetPassword">
-                <el-row v-if="loading">
-                    <el-col :span="24">
-                        <div class="loading_container" id="loading">
-                            <div class='ring blue'></div>
-                            <div id="loading_content">
-                                <span>加载中，请稍后</span>
-                            </div>
-                        </div>
+    <div >
+        <el-row v-if="loading"  id="loading">
+            <el-col :span="24">
+                <div class="loading_container" >
+                    <div class='ring blue'></div>
+                    <div id="loading_content">
+                        <span>加载中，请稍后</span>
+                    </div>
+                </div>
+            </el-col>
+        </el-row>
+        <div v-if="show"  id="ForgetPassword" style="border:1px black solid; box-shadow:0px 0px 20px 0 black;">
+            <template >
+                <el-row style="background-color:#545c64;color: #fff; margin-bottom: 40px">
+                    <el-col >
+                        <h1 class="el-col-push-7">密码找回</h1>
                     </el-col>
                 </el-row>
-                <template v-if="show">
-                    <el-row >
-                        <el-col :span="24">
-                            <h1 class="el-col-push-8">密码找回</h1>
-                        </el-col>
-                    </el-row>
-                    <el-row >
-                        <el-col :span="24">
-                            <el-form :model="ruleForm" :rules="rules" label-position="top" ref="ruleForm" label-width="55px" width="400px" id="ruleForm" class="demo-ruleForm">
-                                <el-form-item label="邮箱" prop="email">
-                                    <el-input v-model="ruleForm.email" type="text"></el-input>
-                                </el-form-item>
-                                <el-form-item >
-                                    <el-button  type="primary" @click="submitForm('ruleForm')">找回密码</el-button>
-                                </el-form-item>
-                                <el-form-item>
-                                    <el-row>
-                                        <el-col :span="8" :offset="10">
-                                            <el-link type="primary"  href="/login">返回登录</el-link>
-                                        </el-col>
-                                    </el-row>
-                                </el-form-item>
-                            </el-form>
-                        </el-col>
-                    </el-row>
-                </template>
-            </div>
+                <el-row >
+                    <el-col style="width: 100%">
+                        <el-form :model="ruleForm" :rules="rules" label-position="top" ref="ruleForm" label-width="55px" width="400px" id="ruleForm" class="demo-ruleForm">
+                            <el-form-item label="邮箱" prop="email">
+                                <el-input style="width: 80%" v-model="ruleForm.email" type="text"></el-input>
+                            </el-form-item>
+                            <el-form-item >
+                                <el-button style="width: 80%" type="primary" @click="submitForm('ruleForm')">找回密码</el-button>
+                            </el-form-item>
+                            <el-form-item>
+                                <el-row>
+                                    <el-col :span="8" :offset="8">
+                                        <el-link type="primary"  href="/login">返回登录</el-link>
+                                    </el-col>
+                                </el-row>
+                            </el-form-item>
+                        </el-form>
+                    </el-col>
+                </el-row>
+            </template>
         </div>
     </div>
 </template>
@@ -114,7 +109,7 @@
     }
     #ForgetPassword{
         width: 300px;
-        height: 200px;
+        height: 400px;
         left: 50%;
         top: 40%;
         transform: translate(-50%,-40%);
@@ -157,8 +152,8 @@
         /* PRESENTATIONAL PURPOSES */
         margin: auto;
         position: absolute;
-        top: 50%; left: 50%;
-        transform: translate(-50%,0%);
+        top: 45%; left: 50%;
+        transform: translate(-50%,-45%);
         /**/
         cursor: pointer;
         -webkit-user-select: none;

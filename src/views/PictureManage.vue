@@ -1,16 +1,16 @@
 <template>
-    <el-container>
-        <el-header v-if="isPicturePage">
+    <el-container style="box-shadow:0px 0px 20px 0 black;height: 100hv">
+        <el-header v-if="isPicturePage" style="background-color:#545c64;;color: #fff">
             <div>
                 <el-tooltip class="item" effect="dark" content="返回上一级" placement="top-start">
                     <i class="el-icon-back" @click="backTo"></i>
                 </el-tooltip>
             </div>
         </el-header>
-        <el-header v-else>
-            <h1>相册查看</h1>
+        <el-header v-else style="background-color:#545c64;color: #fff">
+            <h1 style="position: relative;top:-20px;">相册查看</h1>
         </el-header>
-        <el-main>
+        <el-main style="border-left:1px #545c64 solid;border-right: 1px #545c64 solid;border-bottom: 1px #545c64 solid;height: 100hv;">
             <router-view :isPicturePage="isPicturePage" @getHeaderStatus="getStatus"  ></router-view>
         </el-main>
     </el-container>
@@ -49,5 +49,7 @@
 </script>
 
 <style scoped>
-
+.le-main{
+    background-color:transparent;;
+}
 </style>

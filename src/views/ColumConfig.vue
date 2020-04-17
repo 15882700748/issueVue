@@ -13,7 +13,7 @@
                 <!--</el-card>-->
             <!--</template>-->
         <!--</water-fall>-->
-        <vue-waterfall-easy ref="waterfall" :imgsArr="imgsArr" @scrollReachBottom="getData">
+        <vue-waterfall-easy  ref="waterfall" :imgsArr="imgsArr" @scrollReachBottom="getData">
             <div class="img-info" slot-scope="props">
                 <p class="some-info">第{{props.value.data.issueId}}张图片</p>
             </div>
@@ -65,8 +65,12 @@
                             d.data = res.data.records[i]
                             logos.push(d)
                         }
-                        console.log(logos)
+
                         _this.imgsArr = _this.imgsArr.concat(logos)
+                        for(let i=0; i<_this.imgsArr.length; i++){
+                            _this.imgsArr[i]._height *= 0.8
+                            console.log(_this.imgsArr[i]._height)
+                        }
                         console.log(_this.imgsArr)
                         if(_this.pages === res.data.pages) _this.$refs.waterfall.waterfallOver()
                         else _this.pages ++

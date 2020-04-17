@@ -1,71 +1,37 @@
 <template>
-    <div >
-        <el-container>
-            <el-aside width="200px"  style="height: 600px;border:1px #aaa solid ">
-                <el-row style="margin-top: 20px">
-                    <el-col :span="22" :offset="1">
-                        <el-form >
-                            <el-form-item>
-                                <el-input size="mini">
-                                    <template slot="append">
-                                        <el-button type="primary">搜索</el-button>
-                                    </template>
-                                </el-input>
-                            </el-form-item>
-                        </el-form>
-                    </el-col>
-                </el-row>
-                <el-row>
-                    <el-col>
-                        <div class="infinite-list-wrapper" style="overflow:auto">
-                            <ul
-                                    class="list"
-                                    v-infinite-scroll="load"
-                                    infinite-scroll-disabled="disabled" >
-                                <li v-for="img in imgArr" class="list-item">
-                                    <img style="width: 160px;" :src="img" alt="">
-                                </li>
-                            </ul>
-                            <p v-if="loading">加载中...</p>
-                            <p v-if="noMore">没有更多了</p>
-                        </div>
-                    </el-col>
-                </el-row>
-            </el-aside>
-            <div style="width: 1px;height: 600px;border-right: 1px #eee solid;position: relative;left: 10px;top: -20px;"></div>
-            <el-container style="height: 600px;">
-                <div class="home" ref="imageWrapper">
-                    <draggable  v-model="homeData" ref="dragWrapper" @update="datadragEnd"  :animation = "500" >
-                        <transition-group >
-                            <el-badge value="可拖动" v-for="(element,index1) in homeData" :key="element.name"
-                                      :class ="index1 === 0 ? 'top' : (index1 === 1 ? 'left' : 'right')">
-                                <ul v-if="element.name === '栏目' && index1 !== 0" :key="element.name">
-                                    <li v-for="(item,index2) in element.item" :key="element.name+index2" class="columnCol" @click="getItemView(index1,index2)">
-                                        {{item.name}}
-                                    </li>
-                                </ul>
-                                <ul v-else-if="element.name === '栏目' && index1 === 0 " :key="element.name">
-                                    <li v-for="(item,index2) in element.item" :key="element.name+index2" class="columnRow" @click="getItemView(index1,index2)">
-                                        {{item.name}}
-                                    </li>
-                                </ul>
-                                <span v-else-if="element.name === '首页' && index1 !== 2 ">
+    <el-container style="box-shadow:0px 0px 20px 0 black;height:640px">
+        <div class="home" ref="imageWrapper">
+            <draggable  v-model="homeData" ref="dragWrapper" @update="datadragEnd"  :animation = "500" >
+                <transition-group >
+                    <el-badge value="可拖动" v-for="(element,index1) in homeData" :key="element.name"
+                              :class ="index1 === 0 ? 'top' : (index1 === 1 ? 'left' : 'right')">
+                        <ul v-if="element.name === '栏目' && index1 !== 0" :key="element.name">
+                            <li v-for="(item,index2) in element.item" :key="element.name+index2" class="columnCol" @click="getItemView(index1,index2)">
+                                {{item.name}}
+                            </li>
+                        </ul>
+                        <ul v-else-if="element.name === '栏目' && index1 === 0 " :key="element.name">
+                            <li v-for="(item,index2) in element.item" :key="element.name+index2" class="columnRow" @click="getItemView(index1,index2)">
+                                {{item.name}}
+                            </li>
+                        </ul>
+                        <span v-else-if="element.name === '首页' && index1 !== 2 ">
                                     <el-carousel v-if="index1 === 0" :autoplay="false"  type="card" height="80px">
-                                        <el-carousel-item style="background-color:#99a9bf ;" v-for="item in 3 " :key="element.name+item">
+                                        <el-carousel-item style="background-color:#f0f0f0 ;" v-for="item in 3 " :key="element.name+item">
                                         </el-carousel-item>
                                      </el-carousel>
-                                    <el-carousel v-else :autoplay="false" indicator-position="outside"   height="380px">
-                                        <el-carousel-item style="background-color:#99a9bf ;" v-for="item in 2" :key="element.name+item">
+                                    <el-carousel v-else :autoplay="false" indicator-position="none"   height="380px">
+                                        <el-carousel-item style="background-color:#f0f0f0 ;" v-for="item in 2" :key="element.name+item">
                                         </el-carousel-item>
                                      </el-carousel>
                                 </span>
-                                <span v-else>
+                        <span v-else>
                                     {{element.name}}
                                 </span>
-                            </el-badge>
-                        </transition-group>
-                    </draggable>
-                    <el-badge value="不可拖动" type="info" class="main">
+                    </el-badge>
+                </transition-group>
+            </draggable>
+            <el-badge value="不可拖动" type="info" class="main">
                        <span v-if="!mainContent.isNull">
                            <span v-if="mainContent.type === 'column'" class="content" v-html="mainContent.content"></span>
                            <span v-else class="content">
@@ -82,20 +48,24 @@
                                    </el-carousel-item>
                                </el-carousel>
                                <div class="notice-wrapper">
-                                   <div class="notice-item notice-item-default">默认配置</div>
+                                   <div class="notice-item notice-item-default">{{articleType }}</div>
                                    <div class="notice-item notice-item-set" @click="showAricleStyleDialog">配置样式</div>
                                </div>
+                               <!--==========================dialog======================================-->
                                <el-dialog
-                                       title="样式选择"
+                                       :title="'选择：'+articleTypeSelect[articleTypeIndex]+'样式'"
                                        :visible.sync="styleSelectDialog"
                                        width="400px"
                                        height="400px"
                                        :before-close="handleClose">
-                                  <el-carousel style="background-color: #eaeaea"  :autoplay="false" arrow="never" height="380px">
+
+                                  <el-carousel @change="selectArticleStyle" style="background-color: #eaeaea"  :autoplay="false" arrow="never" height="380px">
+                                       <!--===========================书籍效果==================================-->
                                         <el-carousel-item :key="'书籍效果'">
                                             <book :articles="mainContent.content"></book>
                                         </el-carousel-item>
-                                        <el-carousel-item >
+                                        <el-carousel-item :key="'卡片效果'">
+                                            <!--===========================卡片效果==================================-->
                                             <el-card class="box-card" shadow="always">
                                               <div slot="header" class="clearfix" style="border-bottom: 1px solid white">
                                                 标题：<span>{{mainContent.content[0].title}}</span>
@@ -104,37 +74,45 @@
                                                 </div>
                                             </el-card>
                                         </el-carousel-item>
+                                        <el-carousel-item  :key="'瀑布流效果'" style="height: 100%">
+                                            <!--===========================瀑布流效果==================================-->
+                                           <vue-waterfall-easy style="height: 100%" class="waterfall" linkRange="custom"  :imgWidth="100" :maxCols="2"
+                                                               ref="waterfall" :imgsArr="imgsArr" @scrollReachBottom="getData">
+                                                <div class="img-info" slot-scope="props">
+                                                    <p class="some-info">标题{{props.value.data.title}}</p>
+                                                    <p class="some-info" v-html="props.value.data.content"></p>
+                                                </div>
+                                                <div slot=".waterfall-head" >waterfall-over</div>
+                                           </vue-waterfall-easy>
+                                            <el-backtop target=".vue-waterfall-easy-scroll" :right="25" :bottom="15" :visibility-height="100"></el-backtop>
+                                        </el-carousel-item>
                                      </el-carousel>
 
                                     <span slot="footer" class="dialog-footer">
                                         <el-button @click="styleSelectDialog = false">取 消</el-button>
-                                        <el-button type="primary" @click="styleSelectDialog = false">确 定</el-button>
+                                        <el-button type="primary" @click="confirmStyleSelect">确认样式</el-button>
                                     </span>
                                  </el-dialog>
                            </span>
                        </span>
-                        <span v-else>显示区</span>
+                <span v-else>显示区</span>
 
-                        <!--最终展示的地方-->
-                    </el-badge>
-                    <el-badge value="不可拖动" type="info" class="footer" ref="footer">
-                        <el-color-picker
-                                v-model="footerColor"
-                                show-alpha
-                                :predefine="predefineColors" @change="changeFooterColor">
-                        </el-color-picker>
-                    </el-badge>
-                    <div class="controllerArea" >
-                        <el-button type="primary" >字体控制</el-button>
-                        <el-button type="primary" @click="uploadQR" >清除图片</el-button>
-                        <el-button type="primary" @click="makeImg" ref="makeImgButton">生成截图</el-button>
-                    </div>
-                </div>
-                <!---->
+                <!--最终展示的地方-->
+            </el-badge>
+            <el-badge value="不可拖动" type="info" class="footer" ref="footer">
+                <el-color-picker
+                        v-model="footerColor"
+                        show-alpha
+                        :predefine="predefineColors" @change="changeFooterColor">
+                </el-color-picker>
+            </el-badge>
+            <div class="controllerArea" >
+                <el-button type="primary" @click="saveStyle" ref="makeImgButton">保存样式</el-button>
+            </div>
+        </div>
+        <!---->
 
-            </el-container>
-        </el-container>
-    </div>
+    </el-container>
 </template>
 
 <script>
@@ -143,9 +121,10 @@
     import vueCropper from 'vue-cropper'
     import html2canvas from 'html2canvas';
     import Book from '../components/tool/book'
+    import vueWaterfallEasy from 'vue-waterfall-easy'
     export default {
         name:'HomeConfig',
-        components:{draggable,VueDragResize,vueCropper,html2canvas,Book},
+        components:{draggable,VueDragResize,vueCropper,html2canvas,Book,vueWaterfallEasy},
         data(){
             return {
                 x:'',
@@ -153,6 +132,7 @@
                 QRUrl: '',
                 LOGOUrl: '',
                 dataURL: '',
+                styleId : '',
                 footerColor: 'rgba(255, 69, 0, 0.68)',
                 predefineColors: [
                     '#ff4500',
@@ -181,22 +161,38 @@
                     style:{},
                     position:{}
                 },
-                colors: [
-                    {text: "首页"},
-                    {text: "栏目"},
-                    {text: ""},
-                ],
+                // colors: [
+                //     {text: "首页"},
+                //     {text: "栏目"},
+                //     {text: ""},
+                // ],
                 startArr:[],
                 endArr:[],
                 imgArr:[],
+                imgsArr: [],
                 mainContent:{
                     isNull:true,
                     type:'',
                     content:null
                 },
+                articleTypeSelect : ['书籍效果','卡片效果','瀑布效果'],
+                styleData: {
+                    color : '',
+                    articleType : '',
+                    Layout : null,
+                    img : ''
+                },
+                articleType : '卡片效果',
+                articleTypeIndex : 1,
                 count: 10,
+                total:0,
+                totalPage:0,
+                currentPage:0,
+                pageSize:0,
+                pages:0,
                 loading: false,
-                styleSelectDialog:false
+                styleSelectDialog:false,
+                isSuccess : true
             }
         },
         directives:{
@@ -299,12 +295,62 @@
             }
         },
         methods: {
+            message(message,type){
+                this.$message({
+                    message:message,
+                    type:type
+                })
+            },
             //dialog
             showAricleStyleDialog(){
                 this.styleSelectDialog =  true
+                this.getData()
             },
             handleClose(){
-
+                this.articleTypeIndex = 0
+                this.imgsArr = []
+            },
+            selectArticleStyle(index,old){
+                // this.message("active:"+index+',orginal:'+old,'info')
+                this.articleTypeIndex = index
+            },
+            confirmStyleSelect(){
+                this.styleSelectDialog = false
+                this.articleType = this.articleTypeSelect[this.articleTypeIndex]
+            },
+            //
+            // clickFn(event, { index, value }) {
+            //     // 阻止a标签跳转
+            //     event.preventDefault()
+            //     // 只有当点击到图片时才进行操作
+            //     // if (event.target.tagName.toLowerCase() == 'img') {
+            //     //     console.log('img clicked',index, value)
+            //     // }
+            //     this.message(event.target.tagName.toLowerCase(),'info')
+            // },
+            getData() {
+                let _this = this
+                axios.post("/issue/queryPage?pageNo="+_this.pages+"&pageSize="+3) // 真实环境中，后端会根据参数group返回新的图片数组，这里我用一个惊呆json文件模拟
+                    .then(res => {
+                        let logos = []
+                        for(let i=0; i<res.data.records.length; i++){
+                            let d = {
+                                src :'',
+                                href : '',
+                                data : null
+                            }
+                            d.src = axios.defaults.baseURL+'issue/'+res.data.records[i].logo
+                            res.data.records[i].content = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+                            d.data = res.data.records[i]
+                            logos.push(d)
+                        }
+                        _this.imgsArr = _this.imgsArr.concat(logos)
+                        if(_this.pages === res.data.pages){
+                            // _this.$refs.waterfall.waterfallOver()
+                            _this.pages = 0
+                        }
+                        else _this.pages ++
+                    })
             },
             //获取数据
             page(){
@@ -324,6 +370,7 @@
                     column.name = '文章'
                     column.content = data.articles
                     data.columns.push(column)
+                    _this.styleId = data.style.styleId
                     _this.homeData[0].item = data.issue
                     _this.homeData[0].name = "首页"
                     _this.homeData[1].item = data.columns
@@ -351,9 +398,9 @@
                         message:'请重新调成'+_this.homeData[evt.newIndex].name,
                         type:'error'
                     })
-                    this.$refs.makeImgButton.disabled = true
+                    this.isSuccess = false;
                 }else{
-                    this.$refs.makeImgButton.disabled = false
+                    this.isSuccess = true
                 }
                 // console.log('拖动前的索引 :' + evt.oldIndex)
                 // console.log('拖动后的索引 :' + evt.newIndex)
@@ -361,7 +408,7 @@
                 this.mainContent.isNull = true
             },
             // 将dom转成canvas
-            makeImg() {
+            saveStyle() {
                 let that = this
                 let opts = {
                     logging: true, // 启用日志记录以进行调试 (发现加上对去白边有帮助)
@@ -369,11 +416,30 @@
                     backgroundColor: null, // 解决生成的图片有白边
                     useCORS: true // 如果截图的内容里有图片,解决文件跨域问题
                 }
+                if(this.isSuccess){
+                    this.styleData.color = this.footerColor
+                    this.styleData.articleType = this.articleType
+                    html2canvas(that.$refs.imageWrapper, opts).then((canvas) => {
+                        let url = canvas.toDataURL('image/png')
+                        // that.styleData.img = url
+                        //that.imgArr.push(url)
+                    })
+                    let d = []
+                    for(let i=0; i<this.homeData.length; i++){
+                        d.push(this.homeData[i].name)
+                    }
+                    this.styleData.Layout = d
+                    let data = {}
+                    data.styleId = this.styleId
+                    data.layout = JSON.stringify(this.styleData)
+                    axios.post('style/updateStyle',data).then(resp => {
+                        that.message("修改成功",'success')
+                    })
+                }else{
+                    this.message('请重新调整首页位置','error')
+                }
                 // eslint-disable-next-line no-undef
-                html2canvas(that.$refs.imageWrapper, opts).then((canvas) => {
-                    let url = canvas.toDataURL('image/png')
-                    that.imgArr.push(url)
-                })
+
             },
             // http图片转成base64，防止解决不了的图片跨域问题
             getBase64Image(img) {
@@ -387,10 +453,7 @@
             },
             // 下载html2canvas生成的截图
             uploadQR() {
-                // let a = document.createElement('a')
-                // a.href = this.dataURL
-                // a.download = '二维码'
-                // a.click()
+
                 this.imgArr = []
             },
             // 获取数据
@@ -422,8 +485,9 @@
     .home{
         margin: 0 auto;
         width: 1000px;
-        height: 600px;
+        height: 640px;
         position: relative;
+        top: 20px;
         color: black;
     }
     .top{
@@ -471,7 +535,7 @@
         position: relative;
         left: 0px;
         top: 420px;
-        border: 1px #aaa dashed;
+        /*border: 1px #aaa dashed;*/
     }
     /*.top:hover ,.left:hover,.right:hover{*/
         /*border: 1px #aaa solid;*/
