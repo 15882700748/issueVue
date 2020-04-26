@@ -146,7 +146,7 @@
                     columns: [
                         { field: "name", title: "栏目名称" },
                         { field: "con", title: "内容"},
-                        { field: "creatTime", title: "创建时间"}
+                        { field: "creatTimeShow", title: "创建时间"}
                     ],
                     data: [],
                 },
@@ -196,7 +196,7 @@
                     _this.columnData.data = resp.data.records
                     for(let i=0; i<_this.columnData.data.length;i++){
                         _this.columnData.data[i].isSet = false;
-                        _this.columnData.data[i].creatTime = _this.timeFormat(_this.columnData.data[i].creatTime)
+                        _this.columnData.data[i].creatTimeShow = _this.timeFormat(_this.columnData.data[i].creatTime)
                         _this.columnData.data[i].con = _this.subContent(_this.columnData.data[i].content)
                     }
                     _this.total = resp.data.total

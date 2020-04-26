@@ -1,11 +1,29 @@
 <template>
-    <el-container style="box-shadow:0px 0px 20px 0 black;height: 100hv">
+    <el-container style="box-shadow:0px 0px 20px 0 black;height: auto">
         <el-header style="background-color:#545c64;color: #fff; margin-bottom: 40px">
             <el-row>
-                <el-col :span="2" :offset="10">
+                <el-col :span="15">
+                    <el-form :model="issueForm"  label-position="top" ref="issueForm" label-width="55px" width="400px"  class="demo-ruleForm">
+                        <el-row style="position: relative;top: 10px">
+                            <el-col :span="24" >
+                                <el-form-item  prop="content">
+                                    <el-input :placeholder="'请输入'+(issueForm.select === 'title' ? '标题' : '会议')+'内容'" clearable v-model="issueForm.content" style="background-color: #545c64;color: white" >
+                                        <el-select v-model="issueForm.select" style="width: 100px"  slot="prepend" placeholder="请选择" >
+                                            <el-option label="标题" value="title"></el-option>
+                                            <el-option label="内容" value="content"></el-option>
+                                        </el-select>
+                                        <el-button slot="append" icon="el-icon-search "  @click="searchIssue('issueForm')">搜索</el-button>
+                                    </el-input>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                    </el-form>
+                </el-col>
+                <el-col :span="2" >
                     会议查看
                 </el-col>
-                <el-col :span="1" :offset="11">
+
+                <el-col :span="1" :offset="6">
                     <i class="el-icon-delete-solid" @click="deleteIssues"></i>
                 </el-col>
             </el-row>
@@ -36,6 +54,10 @@
                                 </span>
                             <el-image v-else-if="v.field === 'logo'" style="display: inline-block;width: 50px;height: 50px;"
                                       :preview-src-list="[scope.row[v.field]+'']"  :src="scope.row[v.field]"></el-image>
+                            <!--<span v-else-if="v.field === 'isSelect'">-->
+                                <!--<el-button  v-if="scope.row[v.field]" type="success" icon="el-icon-success" ></el-button>-->
+                                <!--<el-button v-else type="primary" @click="confirmSelect(scope.row, scope.$index)"> 选择</el-button>-->
+                            <!--</span>-->
                             <span v-else>
                                     {{scope.row[v.field]}}
                                 </span>
@@ -43,9 +65,15 @@
                     </el-table-column>
                     <el-table-column label="管理" align="center">
                         <template slot-scope="scope">
-                            <el-link type="primary" @click="viewIssue(scope.row.issueId,scope.row.title)">文章管理</el-link>
+                            <el-link type="primary" @click="viewIssue(scope.row.issueId,scope.row.title)">文章</el-link>
                             <el-divider direction="vertical"></el-divider>
-                            <el-link type="primary" @click="viewIssueColum(scope.row.issueId,scope.row.title)">栏目管理</el-link>
+                            <el-link type="primary" @click="viewIssueColum(scope.row.issueId,scope.row.title)">栏目</el-link>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="展示状态" align="center">
+                        <template slot-scope="scope">
+                            <el-button  v-if="scope.row.isSelect" type="success" icon="el-icon-success" ></el-button>
+                            <el-button v-else type="primary" @click="confirmSelect(scope.row, scope.$index)"> 选择</el-button>
                         </template>
                     </el-table-column>
                     <el-table-column label="操作" width="100" align="center">
@@ -95,7 +123,11 @@
                                     <el-input v-model="addIssueForm.title" autocomplete="off" placeholder="标题"></el-input>
                                 </el-form-item>
                                 <el-form-item label="" prop="content" v-show="active === 3">
-                                    <editor style="height: 150px"  v-model='addIssueForm.content' :init='init'></editor>
+                                    <!--<editor style="height: 150px"  v-model='addIssueForm.content' :init='init'></editor>-->
+                                    <kind-editor id="editor" height="500px" width="100%" :content.sync="addIssueForm.content"
+                                                 pluginsPath="kindeditor/plugins/"
+                                                 :loadStyleMode="false"
+                                                 ></kind-editor>
                                 </el-form-item>
                                 <el-form-item v-show="active === 4" prop="holdupTime">
                                     <el-date-picker
@@ -144,7 +176,11 @@
                                     <el-input v-model="addIssueForm.title" autocomplete="off" placeholder="标题" @input="updateIssueData('title',addIssueForm.issueId)"></el-input>
                                 </el-form-item>
                                 <el-form-item label="" prop="content" v-show="active === 3">
-                                    <editor style="height: 150px"  v-model='addIssueForm.con' :init='init' @input="updateIssueData('content',addIssueForm.issueId)"></editor>
+                                    <!--<editor style="height: 150px"  v-model='addIssueForm.con' :init='init' @input="updateIssueData('content',addIssueForm.issueId)"></editor>-->
+                                    <kind-editor id="editor_id" height="500px" width="100%" :content.sync="addIssueForm.con"
+                                                 pluginsPath="kindeditor/plugins/"
+                                                 :loadStyleMode="false"
+                                                 @on-content-change="onContentChange"></kind-editor>
                                 </el-form-item>
                                 <el-form-item v-show="active === 4" prop="holdupTime">
                                     <el-date-picker
@@ -218,6 +254,10 @@
         components: {Editor,searchMap,popoverMap},
         data(){
             return {
+                issueForm : {
+                    select : 'title',
+                    content : ''
+                },
                 issueData: {
                     sel: null,//选中行
                     isUpdate:true,
@@ -225,8 +265,9 @@
                         { field: "logo", title: "图标(点击查看logo)" },
                         { field: "title", title: "标题" },
                         { field: "content", title: "内容(可点击详情)"},
-                        { field: "holdupTime", title: "举办时间"},
+                        { field: "holdupTimeShow", title: "举办时间"},
                         { field: "location", title: "举办地点(可点击详情)"},
+                        // { field: "isSelect", title: "展示状态"},
                     ],
                     data: [],
                 },
@@ -311,10 +352,36 @@
                 tempLocation:{},
                 tempRow:{},
                 tempIndex:0,
+                selectId :0 ,
                 issueDetails:{title:'', content:''}
             }
         },
         methods:{
+            onContentChange(val){
+                this.addIssueForm.content = this.addIssueForm.con
+                this.updateIssueData('content',this.addIssueForm.issueId)
+            },
+            confirmSelect(row,index){
+                let _this =this
+
+                axios.post('/style/queryStyle?issueId='+row.issueId).then(resp => {
+                    _this.selectId = row.issueId
+                    _this.page(_this.currentPage)
+                })
+            },
+            searchIssue(formName){
+                this.$refs[formName].validate((valid) => {
+                    const _this = this;
+                    this.page(0);
+                    if(this.issueForm.content !== '') {
+                        _this.$message({
+                            message:'搜索成功',
+                            type:'success'
+                        })
+                    }
+
+                });
+            },
             contentDrawer(row){
                 this.viewIssuedetailsVisible = true
                 this.issueDetails.title = row.title
@@ -404,15 +471,26 @@
                 date = date.toString()
                 return date.substr(0,11);
             },
+            getSelected(){
+                const  _this = this
+                axios.post('/issue/getSelected').then(resp => {
+                    _this.selectId = parseInt(resp.data)
+                })
+            },
             page(pageNo, pageSize=5){
               const  _this = this
-              axios.post("/issue/queryPage?pageNo="+pageNo+"&pageSize="+pageSize).then(function (resp) {
+              axios.post("/issue/page?pageNo="+pageNo+"&pageSize="+pageSize+'&'+this.issueForm.select+"="+this.issueForm.content).then(function (resp) {
                   _this.issueData.data = resp.data.records
                   for(let i=0; i<_this.issueData.data.length;i++){
                       _this.issueData.data[i].isSet = false;
+                      if(_this.issueData.data[i].issueId ===  _this.selectId){
+                          _this.issueData.data[i].isSelect = true
+                      }else{
+                          _this.issueData.data[i].isSelect = false
+                      }
                       _this.issueData.data[i].con = _this.issueData.data[i].content
                       _this.issueData.data[i].content = _this.subContent(_this.issueData.data[i].content)
-                      _this.issueData.data[i].holdupTime = _this.timeFormat(_this.issueData.data[i].holdupTime)
+                      _this.issueData.data[i].holdupTimeShow = _this.timeFormat(_this.issueData.data[i].holdupTime)
                       _this.issueData.data[i].logo= axios.defaults.baseURL+'issue/'+_this.issueData.data[i].logo
                       _this.issueData.data[i].loc = _this.issueData.data[i].location
                       _this.issueData.data[i].popoverLocation = JSON.parse(_this.issueData.data[i].location)
@@ -467,19 +545,26 @@
                 if(type === 'content'){
                     this.addIssueForm.content = this.addIssueForm.con
                 }
-                console.log(this.addIssueForm)
-                data.issueId = id
-                axios.post('/issue/updateIssue',data).then(function (resp) {
-                    if(resp.data.code === "200"){
-                        _this.page(_this.currentPage)
-                    }else{
-                        _this.$message({
-                            message:resp.data.msg,
-                            type:'error'
-                        })
-                    }
 
-                })
+                data.issueId = id
+
+                if(data.issueId === undefined){
+
+                }else{
+                    console.log(data)
+                    axios.post('/issue/updateIssue',data).then(function (resp) {
+                        if(resp.data.code === "200"){
+                            _this.page(_this.currentPage)
+                        }else{
+                            _this.$message({
+                                message:resp.data.msg,
+                                type:'error'
+                            })
+                        }
+
+                    })
+                }
+
             },
             viewLocation(row){
 
@@ -632,6 +717,7 @@
             },
         },
         created(){
+            this.getSelected()
             this.page(0)
         }
     }

@@ -138,6 +138,7 @@
             },
             confirm(){
                 this.location.issueId = this.issueId
+                console.log(this.location)
                 this.$emit('getLocationInfo',this.location)
             }
         }

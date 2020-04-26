@@ -19,6 +19,7 @@ import AlbumComp from '../components/picture/albumComp'
 import pictureComp from '../components/picture/pictureComp'
 import IssueManage from '../views/issue/issueManage'
 import Map from "../views/tool/map"
+import issueSelect from '../views/issue/issueSelect'
 Vue.use(VueRouter)
 
 const routes = [
@@ -79,6 +80,12 @@ const routes = [
                 path:'/issueManage',
                 name:'会议',
                 component:IssueManage,
+            },
+            {
+                show:true,
+                path:'/issueSelect',
+                name:'会议展示选择',
+                component:issueSelect,
             },
             {
                 show:false,

@@ -10,7 +10,7 @@
                 </div>
             </el-col>
         </el-row>
-        <div v-else style="box-shadow:0px 0px 10px 0 black;height:600px;width: 350px">
+        <div v-else style="background-color:white;box-shadow:0px 0px 10px 0 black;height:630px;width: 350px">
             <el-row style="background-color:#545c64;color: #fff; margin-bottom: 20px">
                 <el-col :span="12" :offset="6"><h1>登录</h1></el-col>
             </el-row>
@@ -33,9 +33,17 @@
                             <div class="divIdentifyingCode" >
                                 <img id="imgIdentifyingCode" style="height:40px; width: 100px; cursor: pointer;" alt="点击更换"
                                      title="点击更换" :src="identifyCodeSrc" @click="getIdentifyingCode(true)"/>
-
-                                <el-link type="primary" class="forgetPassword" @click="forgetPassword">忘记密码</el-link>
                             </div>
+                        </el-form-item>
+                        <el-form-item style="margin-top:-19px;margin-bottom:6px;" >
+                            <el-row>
+                                <el-col :span="4" :offset="3">
+                                    <el-checkbox v-model="checked" style="color:#a0a0a0;margin-top:-10px;">记住密码</el-checkbox>
+                                </el-col>
+                                <el-col :span="6" :offset="9">
+                                    <el-link type="primary" style="text-decoration: none"  @click="forgetPassword">忘记密码</el-link>
+                                </el-col>
+                            </el-row>
                         </el-form-item>
                         <el-form-item  style="position:relative;top: -10px">
                             <el-row>
@@ -69,6 +77,9 @@
         name: "loginComp",
         components:{
           BackComp
+        },
+        mounted() {
+            this.getCookie();
         },
         data() {
             var validatePassword = (rule, value, callback) => {
@@ -106,10 +117,37 @@
                     code :[
                         {required: true, message: '请填写验证', trigger: 'blur'}
                     ]
-                }
+                },
+                checked:true
             };
         },
         methods: {
+            setCookie(c_name, c_pwd, exdays) {
+                let exdate = new Date(); //获取时间
+                exdate.setTime(exdate.getTime() + 24 * 60 * 60 * 1000 * exdays); //保存的天数
+                //字符串拼接cookie
+                window.document.cookie =
+                    "userName" + "=" + c_name + ";path=/;expires=" + exdate.toGMTString();
+                window.document.cookie =
+                    "userPwd" + "=" + c_pwd + ";path=/;expires=" + exdate.toGMTString();
+            },
+            getCookie: function() {
+                if (document.cookie.length > 0) {
+                    let arr = document.cookie.split("; "); //这里显示的格式需要切割一下自己可输出看下
+                    for (let i = 0; i < arr.length; i++) {
+                        var arr2 = arr[i].split("="); //再次切割
+                        //判断查找相对应的值
+                        if (arr2[0] == "userName") {
+                            this.ruleForm.account = arr2[1]; //保存到保存数据的地方
+                        } else if (arr2[0] == "userPwd") {
+                            this.ruleForm.password = arr2[1];
+                        }
+                    }
+                }
+            },
+            clearCookie: function() {
+                this.setCookie("", "", -1); //修改2值都为空，天数为负1天就好了
+            },
             submitForm(formName) {
                 const _this = this;
                 this.$refs[formName].validate((valid) => {
@@ -124,6 +162,11 @@
                                     message:res.msg,
                                     type: "success"
                                 })
+                                if(_this.checked === true) {
+                                    _this.setCookie(data.account,data.password,7)
+                                }else{
+                                    _this.clearCookie()
+                                }
                                 _this.loading = false
                                 window.sessionStorage.setItem('token',res.token)
                                 window.sessionStorage.setItem('orgName',res.orgName)

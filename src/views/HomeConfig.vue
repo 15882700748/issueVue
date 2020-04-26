@@ -35,8 +35,9 @@
                        <span v-if="!mainContent.isNull">
                            <span v-if="mainContent.type === 'column'" class="content" v-html="mainContent.content"></span>
                            <span v-else class="content">
-                              <el-carousel :autoplay="false" indicator-position="outside"  height="320px" >
-                                   <el-carousel-item v-for="(item,i) in mainContent.content" :key="item.title">
+                               <div v-if="articleType === '卡片效果'">
+                                   <el-carousel :autoplay="false" indicator-position="outside"  height="320px" >
+                                        <el-carousel-item v-for="(item,i) in mainContent.content" :key="item.title">
                                        <el-card shadow="always" class="box-card">
                                             <div slot="header" class="clearfix">
                                                 文章{{i+1}}-<strong>标题：</strong><span>{{item.title}}</span>
@@ -46,7 +47,22 @@
                                            </div>
                                        </el-card>
                                    </el-carousel-item>
-                               </el-carousel>
+                                   </el-carousel>
+                               </div>
+                               <div v-else-if="articleType === '书籍效果'" >
+                                    <book :articles="mainContent.content"></book>
+                               </div>
+                              <div v-else style="height: 100%;width: 100%;">
+                                  <vue-waterfall-easy style="height: 100%" class="waterfall" linkRange="custom"  :imgWidth="120" :maxCols="2"
+                                                      ref="waterfall" :imgsArr="imgsArr" @scrollReachBottom="getData">
+                                                <div class="img-info" slot-scope="props">
+                                                    <p class="some-info">标题{{props.value.data.title}}</p>
+                                                    <p class="some-info" >{{props.value.data.content}}</p>
+                                                </div>
+                                                <div slot=".waterfall-head" >waterfall-over</div>
+                                           </vue-waterfall-easy>
+                                  <el-backtop target=".vue-waterfall-easy-scroll" :right="25" :bottom="15" :visibility-height="100"></el-backtop>
+                              </div>
                                <div class="notice-wrapper">
                                    <div class="notice-item notice-item-default">{{articleType }}</div>
                                    <div class="notice-item notice-item-set" @click="showAricleStyleDialog">配置样式</div>
@@ -100,15 +116,16 @@
                 <!--最终展示的地方-->
             </el-badge>
             <el-badge value="不可拖动" type="info" class="footer" ref="footer">
-                <el-color-picker
-                        v-model="footerColor"
-                        show-alpha
-                        :predefine="predefineColors" @change="changeFooterColor">
-                </el-color-picker>
+                <!--<el-color-picker-->
+                        <!--v-model="footerColor"-->
+                        <!--show-alpha-->
+                        <!--:predefine="predefineColors" @change="changeFooterColor">-->
+                <!--</el-color-picker>-->
+                <el-button style="height: 50px;margin-top: 20px" type="primary" @click="saveStyle" ref="makeImgButton">保存样式</el-button>
             </el-badge>
-            <div class="controllerArea" >
-                <el-button type="primary" @click="saveStyle" ref="makeImgButton">保存样式</el-button>
-            </div>
+            <!--<div class="controllerArea" >-->
+
+            <!--</div>-->
         </div>
         <!---->
 
@@ -121,10 +138,11 @@
     import vueCropper from 'vue-cropper'
     import html2canvas from 'html2canvas';
     import Book from '../components/tool/book'
+    import ShowBook from '../components/showBook'
     import vueWaterfallEasy from 'vue-waterfall-easy'
     export default {
         name:'HomeConfig',
-        components:{draggable,VueDragResize,vueCropper,html2canvas,Book,vueWaterfallEasy},
+        components:{draggable,VueDragResize,vueCropper,html2canvas,Book,vueWaterfallEasy,ShowBook},
         data(){
             return {
                 x:'',
@@ -295,6 +313,28 @@
             }
         },
         methods: {
+            getStyle(){
+                let _this = this
+                axios.post('/style/getStyle').then(resp => {
+                    if(resp.data.code === '200'){
+                        let style = resp.data.style,
+                            layout = JSON.parse(style.layout).Layout,
+                            typeInfo = JSON.parse(style.layout),
+                            arr = [],
+                            code,
+                            target
+                        this.articleType = typeInfo.articleType
+                        this.articleTypeIndex = this.articleTypeSelect.indexOf(this.articleType)
+                        console.log(typeInfo)
+                        _this.homeData[layout.indexOf('首页')].name = '首页'
+                        _this.homeData[layout.indexOf('栏目')].name = '栏目'
+                        _this.homeData[layout.indexOf('')].name = ''
+
+                    }else{
+                        _this.$message("未设置展示")
+                    }
+                })
+            },
             message(message,type){
                 this.$message({
                     message:message,
@@ -340,7 +380,7 @@
                                 data : null
                             }
                             d.src = axios.defaults.baseURL+'issue/'+res.data.records[i].logo
-                            res.data.records[i].content = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+                            res.data.records[i].content = 'xxxxxxxxxxxx'
                             d.data = res.data.records[i]
                             logos.push(d)
                         }
@@ -371,12 +411,15 @@
                     column.content = data.articles
                     data.columns.push(column)
                     _this.styleId = data.style.styleId
-                    _this.homeData[0].item = data.issue
-                    _this.homeData[0].name = "首页"
-                    _this.homeData[1].item = data.columns
-                    _this.homeData[1].name = "栏目"
-                    _this.homeData[2].item = null
-                    _this.homeData[2].name = ""
+                    for(let i=0; i< _this.homeData.length; i++){
+                        if(_this.homeData[i].name === '首页'){
+                            _this.homeData[i].item = data.issue
+                        }else if(_this.homeData[i].name === '栏目'){
+                            _this.homeData[i].item = data.columns
+                        }else{
+                            _this.homeData[i].item = null
+                        }
+                    }
                 })
             },
             set(val){
@@ -472,6 +515,7 @@
             }
         },
         created(){
+            this.getStyle()
             this.page()
         }
     }
@@ -522,8 +566,11 @@
         border: 1px #aaa dashed;
     }
     .footer{
+        display: flex;
+        justify-content: center;
+        justify-items: center;
         width: 1000px;
-        height: 50px;
+        height: 100px;
         position: relative;
         left: 0;
         top: 410px;

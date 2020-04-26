@@ -7,11 +7,9 @@
 
 <script>
 
-import Org from './views/org'
 export default {
   name: 'app',
   components: {
-    Org
   },
     data(){
         return {

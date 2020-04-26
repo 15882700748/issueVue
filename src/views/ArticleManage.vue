@@ -13,7 +13,7 @@
                         <el-row>
                             <el-col :span="24">
                                 <el-form-item  prop="content">
-                                    <el-input placeholder="请输入内容" clearable v-model="articleForm.content" style="background-color: #545c64;color: white" >
+                                    <el-input :placeholder="'请输入'+(articleForm.select === 'title' ? '标题' : '会议')+'内容'" clearable v-model="articleForm.content" style="background-color: #545c64;color: white" >
                                         <el-select v-model="articleForm.select" style="width: 100px"  slot="prepend" placeholder="请选择" >
                                             <el-option label="标题" value="title"></el-option>
                                             <el-option label="内容" value="content"></el-option>
@@ -43,8 +43,8 @@
                     <el-table-column v-for="(v,i) in master_user.columns" :prop="v.field" :label="v.title" align="center">
                         <template slot-scope="scope">
                                 <span v-if="scope.row.isSet">
-                                    <el-date-picker v-if="v.field === 'realseTime' || v.field === 'holdupTime'"
-                                                    v-model="master_user.sel[v.field]" :disabled="v.field === 'realseTime'"
+                                    <el-date-picker v-if="v.field === 'realseTimeShow' || v.field === 'holdupTimeShow'"
+                                                    v-model="master_user.sel[v.field]" :disabled="v.field === 'realseTimeShow'"
                                                     type="datetime"
                                                     placeholder="选择日期时间"
                                                     align="center"
@@ -55,7 +55,11 @@
                                         <i class="el-icon-edit" v-else @click="showDialogTinymecVisible(scope.row,scope.row.articleId,'add')"></i>
                                         <el-dialog  title="新增赞助商" :visible.sync="dialogTinymecVisible" :close-on-click-modal="!dialogTinymecVisible"
                                                     center  @closed="HandleOnClose(scope.row)">
-                                            <editor  v-model='master_user.sel[v.field]' :init='init'></editor>
+                                            <!--<editor  v-model='master_user.sel[v.field]' :init='init'></editor>-->
+                                             <kind-editor :id="'editor_id'+scope.$index" height="500px" width="100%" :content.sync="master_user.sel[v.field]"
+                                                          pluginsPath="kindeditor/plugins/"
+                                                          :loadStyleMode="false"
+                                                          ></kind-editor>
                                             <span slot="footer" class="dialog-footer">
                                                 <el-button @click="dialogTinymecVisible = false">取 消</el-button>
                                                 <el-button type="primary" @click="saveArticleContent(scope.row,scope.$index)">保存</el-button>
@@ -157,10 +161,10 @@
                     sel: null,//选中行
                     isUpdate:true,
                     columns: [
-                        { field: "realseTime", title: "创建时间" },
+                        { field: "realseTimeShow", title: "创建时间" },
                         { field: "title", title: "标题" },
                         { field: "content", title: "内容"},
-                        { field: "holdupTime", title: "举办时间"}
+                        { field: "holdupTimeShow", title: "举办时间"}
                     ],
                     data: [],
                 },
@@ -310,8 +314,8 @@
                     _this.master_user.data = resp.data.records
                    for(let i=0; i<_this.master_user.data.length;i++){
                        _this.master_user.data[i].isSet = false;
-                       _this.master_user.data[i].realseTime = _this.timeFormat(_this.master_user.data[i].realseTime,0,16)
-                       _this.master_user.data[i].holdupTime = _this.timeFormat(_this.master_user.data[i].holdupTime,0,11)
+                       _this.master_user.data[i].realseTimeShow = _this.timeFormat(_this.master_user.data[i].realseTime,0,16)
+                       _this.master_user.data[i].holdupTimeShow = _this.timeFormat(_this.master_user.data[i].holdupTime,0,11)
                        _this.master_user.data[i].content = _this.subContent(_this.master_user.data[i].content)
                    }
                     _this.total = resp.data.total
@@ -377,7 +381,7 @@
                 for (let i of this.master_user.data) {
                     if (i.isSet) return this.$message.warning("请先保存当前编辑项");
                 }
-                let j = { "realseTime": "", "title": "", "content": "", "holdupTime": "", "isSet": true, "_temporary": true };
+                let j = { "realseTimeShow": "", "title": "", "content": "", "holdupTimeShow": "", "isSet": true, "_temporary": true };
                 this.master_user.data.push(j);//添加到
                 this.master_user.isUpdate = false
                 this.master_user.sel = JSON.parse(JSON.stringify(j));
@@ -414,6 +418,7 @@
                             this.$message.warning("内容不能为空")
                             return ;
                         }
+                        console.log(data)
                         axios.post('/article/updateArticle',data).then(function (resp) {
                             if(resp.data.code === '200'){
                                 _this.$message({
@@ -477,13 +482,13 @@
 
                 if(status === 'add'){
                     _this.dialogTinymecVisible=true
-                    this.master_user.sel.contetn = row.content
+                    this.master_user.sel.content = row.content
                 }else{
                     _this.dialogTinymecVisible=true
                     if(this.isEdited){//编辑过了
-                        this.master_user.sel.contetn = row.content
+                        this.master_user.sel.content = row.content
                     }else{
-                        this.master_user.sel.contetn = row.content
+                        this.master_user.sel.content = row.content
                         axios.post('/article/getOneArticle',{"articleId":id}).then(function (resp) {
                             _this.master_user.sel.content = resp.data.content
                             _this.dialogTinymecVisible=true

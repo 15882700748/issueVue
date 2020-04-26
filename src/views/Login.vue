@@ -1,8 +1,5 @@
 <template>
-   <div>
-      <!--<div id="back">-->
-         <!--<BackComp></BackComp>-->
-      <!--</div>-->
+   <div class="background">
       <div id="ruleForm">
          <loginComp></loginComp>
       </div>
@@ -52,8 +49,15 @@
       width: 350px;
       height: 450px;
       position: absolute;
-      left: 50%;
+      left: 80%;
       top: 25%;
-      transform: translate(-50%,-25%);
+      transform: translate(-80%,-25%);
+   }
+   .background{
+      width: 100%;
+      height: 97vh;
+      background-image: url("https://192.168.1.16:8080/imgs/download.jpg");
+      background-repeat: no-repeat;
+      background-size: 100% 100%  ;
    }
 </style>

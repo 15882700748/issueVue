@@ -1,5 +1,5 @@
 <template>
-    <el-container style="box-shadow:0px 0px 20px 0 black;height: 100hv">
+    <el-container style="box-shadow:0px 0px 20px 0 black;height: auto">
         <el-header v-if="isPicturePage" style="background-color:#545c64;;color: #fff">
             <div>
                 <el-tooltip class="item" effect="dark" content="返回上一级" placement="top-start">

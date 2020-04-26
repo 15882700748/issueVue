@@ -19,9 +19,9 @@
                     <el-form-item prop="confirmPassword">
                         <el-input style="width: 80%" type="password" v-model="ruleForm.confirmPassword" placeholder="密码确认" show-password clearable></el-input>
                     </el-form-item>
-                    <!--<el-form-item  prop="tel">-->
-                        <!--<el-input style="width: 80%" v-model="ruleForm.tel" type="tel" placeholder="电话" clearable></el-input>-->
-                    <!--</el-form-item>-->
+                    <el-form-item  prop="tel">
+                        <el-input style="width: 80%" v-model="ruleForm.tel" type="tel" placeholder="电话" clearable></el-input>
+                    </el-form-item>
                     <el-form-item  prop="email">
                         <el-input  style="width: 80%" v-model="ruleForm.email" placeholder="邮箱" clearable></el-input>
                     </el-form-item>
@@ -40,7 +40,7 @@
                     <el-form-item style="position:relative;top: -10px">
                         <el-row>
                             <el-col >
-                                <el-button style="width: 80%" type="primary" @click="submitForm('ruleForm')">登录</el-button>
+                                <el-button style="width: 80%" type="primary" @click="submitForm('ruleForm')">注册</el-button>
                             </el-col>
                             <el-col >
                                 <el-button style="width: 80%"  @click="resetForm('ruleForm')">重置</el-button>

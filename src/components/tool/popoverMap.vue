@@ -51,8 +51,6 @@
                 let point = new BMap.Point(this.center.lng, this.center.lat);
                 let marker = new BMap.Marker(point); // 创建标注
                 map.centerAndZoom(point, this.zoom);
-                console.log(this.center)
-                console.log(point)
                 map.addOverlay(marker);
                 map.enableScrollWheelZoom(true);
             },
