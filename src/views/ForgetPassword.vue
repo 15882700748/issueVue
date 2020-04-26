@@ -1,5 +1,6 @@
 <template>
     <div >
+        <canvasGarden style="width: 100vw;height: 100vh;position: absolute;transform: translateX(-50%);left: 50%"></canvasGarden>
         <el-row v-if="loading"  id="loading">
             <el-col :span="24">
                 <div class="loading_container" >
@@ -12,16 +13,16 @@
         </el-row>
         <div v-if="show"  id="ForgetPassword" style="border:1px black solid; box-shadow:0px 0px 20px 0 black;">
             <template >
-                <el-row style="background-color:#545c64;color: #fff; margin-bottom: 40px">
+                <el-row style="color: #fff; margin-bottom: 40px">
                     <el-col >
                         <h1 class="el-col-push-7">密码找回</h1>
                     </el-col>
                 </el-row>
                 <el-row >
-                    <el-col style="width: 100%">
+                    <el-col style="width: 100%;">
                         <el-form :model="ruleForm" :rules="rules" label-position="top" ref="ruleForm" label-width="55px" width="400px" id="ruleForm" class="demo-ruleForm">
-                            <el-form-item label="邮箱" prop="email">
-                                <el-input style="width: 80%" v-model="ruleForm.email" type="text"></el-input>
+                            <el-form-item  prop="email" style="color: white">
+                                <el-input style="width: 80%" v-model="ruleForm.email" type="text" placeholder="请输入邮箱"></el-input>
                             </el-form-item>
                             <el-form-item >
                                 <el-button style="width: 80%" type="primary" @click="submitForm('ruleForm')">找回密码</el-button>
@@ -43,10 +44,12 @@
 
 <script>
     import BackComp from  '../components/BackComp'
+    import  canvasGarden  from '../views/tool/canvasGarden'
     export default {
         name: "ForgetPassword",
         components:{
-            BackComp
+            BackComp,
+            canvasGarden
         },
         data(){
             return{

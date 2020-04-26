@@ -27,6 +27,12 @@ export default {
   text-align: center;
   color: #2c3e50;
   overflow-y: scroll;
+  margin: 0;
+  padding: 0;
+}
+body{
+  padding: 0;
+  margin: 0;
 }
   #footer{
     position: relative;

@@ -1,5 +1,5 @@
 <template>
-    <div style="box-shadow:0px 0px 10px 0 black;height:720px;width: 400px">
+    <div style="box-shadow:0px 0px 10px 0 black;height:750px;width: 400px;background-color: white">
         <el-row style="background-color:#545c64;color: #fff; margin-bottom: 20px">
             <el-col :span="12" :offset="6"><h2>注册</h2></el-col>
         </el-row>
