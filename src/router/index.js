@@ -38,12 +38,12 @@ const routes = [
                 name: '首页样式',
                 component:HomeConfig,
             },
-            // {
-            //     show:true,
-            //     path:'/columConfig',
-            //     name:'栏目样式',
-            //     component:ColumConfig,
-            // },
+            {
+                show:true,
+                path:'/columConfig',
+                name:'栏目样式',
+                component:ColumConfig,
+            },
             // {
             //     show:true,
             //     path:'/articleConfig',

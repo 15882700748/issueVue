@@ -1,7 +1,7 @@
 <template>
-    <el-container style="box-shadow:0px 0px 20px 0 black;height:640px">
+    <el-container style="box-shadow:0px 0px 20px 0 black;min-height:740px">
         <div class="home" ref="imageWrapper">
-            <draggable  v-model="homeData" ref="dragWrapper" @update="datadragEnd"  :animation = "500" >
+            <draggable  v-model="homeData" ref="dragWrapper" @update="datadragEnd"  :animation = "500" style="position: relative">
                 <transition-group >
                     <el-badge value="可拖动" v-for="(element,index1) in homeData" :key="element.name"
                               :class ="index1 === 0 ? 'top' : (index1 === 1 ? 'left' : 'right')">
@@ -116,13 +116,95 @@
                 <!--最终展示的地方-->
             </el-badge>
             <el-badge value="不可拖动" type="info" class="footer" ref="footer">
-                <!--<el-color-picker-->
-                        <!--v-model="footerColor"-->
-                        <!--show-alpha-->
-                        <!--:predefine="predefineColors" @change="changeFooterColor">-->
-                <!--</el-color-picker>-->
                 <el-button style="height: 50px;margin-top: 20px" type="primary" @click="saveStyle" ref="makeImgButton">保存样式</el-button>
             </el-badge>
+            <!--<el-badge value="不可拖动" type="info" class="main">-->
+                       <!--<span v-if="!mainContent.isNull">-->
+                           <!--<span v-if="mainContent.type === 'column'" class="content" v-html="mainContent.content"></span>-->
+                           <!--<span v-else class="content">-->
+                               <!--<div v-if="articleType === '卡片效果'">-->
+                                   <!--<el-carousel :autoplay="false" indicator-position="outside"  height="320px" >-->
+                                        <!--<el-carousel-item v-for="(item,i) in mainContent.content" :key="item.title">-->
+                                       <!--<el-card shadow="always" class="box-card">-->
+                                            <!--<div slot="header" class="clearfix">-->
+                                                <!--文章{{i+1}}-<strong>标题：</strong><span>{{item.title}}</span>-->
+                                            <!--</div>-->
+                                           <!--<strong>内容：</strong>-->
+                                           <!--<div v-html="item.content">-->
+                                           <!--</div>-->
+                                       <!--</el-card>-->
+                                   <!--</el-carousel-item>-->
+                                   <!--</el-carousel>-->
+                               <!--</div>-->
+                               <!--<div v-else-if="articleType === '书籍效果'" >-->
+                                    <!--<book :articles="mainContent.content"></book>-->
+                               <!--</div>-->
+                              <!--<div v-else style="height: 100%;width: 100%;">-->
+                                  <!--<vue-waterfall-easy style="height: 100%" class="waterfall" linkRange="custom"  :imgWidth="120" :maxCols="2"-->
+                                                      <!--ref="waterfall" :imgsArr="imgsArr" @scrollReachBottom="getData">-->
+                                                <!--<div class="img-info" slot-scope="props">-->
+                                                    <!--<p class="some-info">标题{{props.value.data.title}}</p>-->
+                                                    <!--<p class="some-info" >{{props.value.data.content}}</p>-->
+                                                <!--</div>-->
+                                                <!--<div slot=".waterfall-head" >waterfall-over</div>-->
+                                           <!--</vue-waterfall-easy>-->
+                                  <!--<el-backtop target=".vue-waterfall-easy-scroll" :right="25" :bottom="15" :visibility-height="100"></el-backtop>-->
+                              <!--</div>-->
+                               <!--<div class="notice-wrapper">-->
+                                   <!--<div class="notice-item notice-item-default">{{articleType }}</div>-->
+                                   <!--<div class="notice-item notice-item-set" @click="showAricleStyleDialog">配置样式</div>-->
+                               <!--</div>-->
+                               <!--&lt;!&ndash;==========================dialog======================================&ndash;&gt;-->
+                               <!--<el-dialog-->
+                                       <!--:title="'选择：'+articleTypeSelect[articleTypeIndex]+'样式'"-->
+                                       <!--:visible.sync="styleSelectDialog"-->
+                                       <!--width="400px"-->
+                                       <!--height="400px"-->
+                                       <!--:before-close="handleClose">-->
+
+                                  <!--<el-carousel @change="selectArticleStyle" style="background-color: #eaeaea"  :autoplay="false" arrow="never" height="380px">-->
+                                       <!--&lt;!&ndash;===========================书籍效果==================================&ndash;&gt;-->
+                                        <!--<el-carousel-item :key="'书籍效果'">-->
+                                            <!--<book :articles="mainContent.content"></book>-->
+                                        <!--</el-carousel-item>-->
+                                        <!--<el-carousel-item :key="'卡片效果'">-->
+                                            <!--&lt;!&ndash;===========================卡片效果==================================&ndash;&gt;-->
+                                            <!--<el-card class="box-card" shadow="always">-->
+                                              <!--<div slot="header" class="clearfix" style="border-bottom: 1px solid white">-->
+                                                <!--标题：<span>{{mainContent.content[0].title}}</span>-->
+                                              <!--</div>-->
+                                                <!--<div style="width: 100%;height: 200px;font-size: 0.1px;" v-html="mainContent.content[0].content">-->
+                                                <!--</div>-->
+                                            <!--</el-card>-->
+                                        <!--</el-carousel-item>-->
+                                        <!--<el-carousel-item  :key="'瀑布流效果'" style="height: 100%">-->
+                                            <!--&lt;!&ndash;===========================瀑布流效果==================================&ndash;&gt;-->
+                                           <!--<vue-waterfall-easy style="height: 100%" class="waterfall" linkRange="custom"  :imgWidth="100" :maxCols="2"-->
+                                                               <!--ref="waterfall" :imgsArr="imgsArr" @scrollReachBottom="getData">-->
+                                                <!--<div class="img-info" slot-scope="props">-->
+                                                    <!--<p class="some-info">标题{{props.value.data.title}}</p>-->
+                                                    <!--<p class="some-info" v-html="props.value.data.content"></p>-->
+                                                <!--</div>-->
+                                                <!--<div slot=".waterfall-head" >waterfall-over</div>-->
+                                           <!--</vue-waterfall-easy>-->
+                                            <!--<el-backtop target=".vue-waterfall-easy-scroll" :right="25" :bottom="15" :visibility-height="100"></el-backtop>-->
+                                        <!--</el-carousel-item>-->
+                                     <!--</el-carousel>-->
+
+                                    <!--<span slot="footer" class="dialog-footer">-->
+                                        <!--<el-button @click="styleSelectDialog = false">取 消</el-button>-->
+                                        <!--<el-button type="primary" @click="confirmStyleSelect">确认样式</el-button>-->
+                                    <!--</span>-->
+                                 <!--</el-dialog>-->
+                           <!--</span>-->
+                       <!--</span>-->
+                <!--<span v-else>显示区</span>-->
+
+                <!--&lt;!&ndash;最终展示的地方&ndash;&gt;-->
+            <!--</el-badge>-->
+            <!--<el-badge value="不可拖动" type="info" class="footer" ref="footer">-->
+                <!--<el-button style="height: 50px;margin-top: 20px" type="primary" @click="saveStyle" ref="makeImgButton">保存样式</el-button>-->
+            <!--</el-badge>-->
             <!--<div class="controllerArea" >-->
 
             <!--</div>-->
@@ -522,58 +604,62 @@
 </script>
 
 <style  scoped>
+    .el-badge {
+        display:block;
+    }
     *,*:after,*:before{
         box-sizing: border-box;
         padding: 0;
     }
     .home{
         margin: 0 auto;
-        width: 1000px;
-        height: 640px;
+        width: 90%;
+        min-height: 700px;
         position: relative;
         top: 20px;
         color: black;
     }
     .top{
-        width: 1000px;
+        width: 100%;
         height: 100px;
         position: relative;
         border: 1px #aaa dashed;
     }
     .main{
-        width: 560px;
-        height: 400px;
+        width: 687px;
+        height: auto;
         position: absolute;
         left: 220px;
-        top: 101px;
+        top: 105px;
         align-items: center;
+        overflow: hidden;
         /*border: 1px deepskyblue dashed;*/
     }
     .right{
         width: 200px;
-        height: 400px;
+        min-height: 400px;
         position: absolute;
         top:105px;
-        left:800px;
+        right:0;
         border: 1px #aaa dashed;
     }
     .left{
         width: 200px;
-        height: 400px;
-        position: absolute;
+        min-height: 400px;
+        position: relative;
         left: 0;
-        top:105px;
+        top:5px;
         border: 1px #aaa dashed;
     }
     .footer{
         display: flex;
         justify-content: center;
         justify-items: center;
-        width: 1000px;
+        width: 100%;
         height: 100px;
         position: relative;
         left: 0;
-        top: 410px;
+        bottom: 0;
         border: 1px #aaa dashed;
     }
     .controllerArea{

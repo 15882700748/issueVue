@@ -34,7 +34,7 @@
     .background{
         width: 100%;
         height: 100vh;
-        background-image: url("https://192.168.1.19:8080/imgs/download.jpg");
+        background-image: url('/imgs/download.jpg');
         background-repeat: no-repeat;
         background-size: 100% 100%  ;
     }
