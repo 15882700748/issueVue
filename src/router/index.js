@@ -38,12 +38,12 @@ const routes = [
                 name: '首页样式',
                 component:HomeConfig,
             },
-            {
-                show:true,
-                path:'/columConfig',
-                name:'栏目样式',
-                component:ColumConfig,
-            },
+            // {
+            //     show:true,
+            //     path:'/columConfig',
+            //     name:'栏目样式',
+            //     component:ColumConfig,
+            // },
             // {
             //     show:true,
             //     path:'/articleConfig',
@@ -81,12 +81,12 @@ const routes = [
                 name:'会议',
                 component:IssueManage,
             },
-            {
-                show:true,
-                path:'/issueSelect',
-                name:'会议展示选择',
-                component:issueSelect,
-            },
+            // {
+            //     show:true,
+            //     path:'/issueSelect',
+            //     name:'会议展示选择',
+            //     component:issueSelect,
+            // },
             {
                 show:false,
                 path:'/columManage',

@@ -27,7 +27,7 @@
                                 v-for="(item,index) in albums"
                                 v-infinite-scroll="load" infinite-scroll-disabled="disabled">
                             <div class="album" >
-                                <img :src="item.imgUrl" class="img" @click="pictureView(item.albumId)" />
+                                <img :src="item.imgUrl" class="img" @click="pictureView(item.albumId,item.albumName)" />
                                 <span class="albumName">相册名称：{{item.albumName}}</span>
                                 <span class="albumDesc">描述：{{item.albumDesc}}</span>
                                 <span class="albumDelete"><i class="el-icon-circle-close" @click="deleteAlbum(item.albumId)"></i></span>
@@ -103,8 +103,8 @@
             }
         },
         methods:{
-            pictureView(albumId){
-                this.$emit('getHeaderStatus',true)
+            pictureView(albumId,albumName){
+                this.$emit('getHeaderStatus',{"isPicture":true,"albumName":albumName})
                 this.$router.push({
                     path:'/picture',
                     query:{

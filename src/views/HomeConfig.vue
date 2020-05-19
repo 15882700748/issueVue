@@ -1,6 +1,7 @@
 <template>
-    <el-container style="box-shadow:0px 0px 20px 0 black;min-height:740px">
-        <div class="home" ref="imageWrapper">
+    <el-container style="box-shadow:0px 0px 20px 0 black;min-height:740px;position: relative">
+       <loading-comp v-if="loadingStatus" :text="loadingText"></loading-comp>
+        <div v-else class="home" ref="imageWrapper">
             <draggable  v-model="homeData" ref="dragWrapper" @update="datadragEnd"  :animation = "500" style="position: relative">
                 <transition-group >
                     <el-badge value="可拖动" v-for="(element,index1) in homeData" :key="element.name"
@@ -209,7 +210,6 @@
 
             <!--</div>-->
         </div>
-        <!---->
 
     </el-container>
 </template>
@@ -283,6 +283,7 @@
                     img : ''
                 },
                 articleType : '卡片效果',
+                loadingText : '数据保存中',
                 articleTypeIndex : 1,
                 count: 10,
                 total:0,
@@ -292,7 +293,8 @@
                 pages:0,
                 loading: false,
                 styleSelectDialog:false,
-                isSuccess : true
+                isSuccess : true,
+                loadingStatus : false
             }
         },
         directives:{
@@ -542,6 +544,7 @@
                     useCORS: true // 如果截图的内容里有图片,解决文件跨域问题
                 }
                 if(this.isSuccess){
+                    this.loadingStatus = true
                     this.styleData.color = this.footerColor
                     this.styleData.articleType = this.articleType
                     html2canvas(that.$refs.imageWrapper, opts).then((canvas) => {
@@ -559,6 +562,7 @@
                     data.layout = JSON.stringify(this.styleData)
                     axios.post('style/updateStyle',data).then(resp => {
                         that.message("修改成功",'success')
+                        that.loadingStatus = false
                     })
                 }else{
                     this.message('请重新调整首页位置','error')

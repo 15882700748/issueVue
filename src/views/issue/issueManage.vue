@@ -551,7 +551,6 @@
                 if(data.issueId === undefined){
 
                 }else{
-                    console.log(data)
                     axios.post('/issue/updateIssue',data).then(function (resp) {
                         if(resp.data.code === "200"){
                             _this.page(_this.currentPage)

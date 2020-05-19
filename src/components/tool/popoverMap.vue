@@ -27,8 +27,12 @@
                 center: {lng: 0, lat: 0},
                 zoom:12,
                 loc:'',
-                show:true
+                show:true,
+                map:null
             }
+        },
+        mounted(){
+          this.dataStatus();
         },
         methods:{
             infoWindowClose () {
@@ -42,6 +46,17 @@
                     this.show = true
                 },100)
             },
+            dataStatus(){
+                let data = JSON.parse(this.location)
+                this.loc =data.province + data.city + data.district + data.street + data.streetNumber
+                this.center.lng = data.lng
+                this.center.lat = data.lat
+                let point = new BMap.Point(this.center.lng, this.center.lat);
+                let marker = new BMap.Marker(point); // 创建标注
+                this.map.clearOverlays();
+                this.map.addOverlay(marker);
+
+            },
             popoverMapReady({BMap, map}){
                 this.geoc = new BMap.Geocoder();
                  let data = JSON.parse(this.location)
@@ -53,6 +68,7 @@
                 map.centerAndZoom(point, this.zoom);
                 map.addOverlay(marker);
                 map.enableScrollWheelZoom(true);
+                this.map = map
             },
         }
     }

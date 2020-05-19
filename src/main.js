@@ -11,8 +11,10 @@ import VueKindEditor from './plugins/kindeditor'
 import '../public/kindeditor/themes/default/default.css'
 import '../public/kindeditor/kindeditor-all-min.js'
 import '../public/kindeditor/lang/zh-CN.js'
+import LoadingComp from './components/tool/LoadingComp'
 
 Vue.use(VueKindEditor)
+Vue.component('LoadingComp',LoadingComp)
 Vue.use(BMap,{
   ak:'XSdzkf0NfDrhjsltQ2IQGTdA9GBXTr2K'
 })

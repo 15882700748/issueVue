@@ -53,7 +53,7 @@
                                         {{scope.row[v.field]}}
                                         <i class="el-icon-edit" v-if="master_user.isUpdate" @click="showDialogTinymecVisible(scope.row,scope.row.articleId,'update')"></i>
                                         <i class="el-icon-edit" v-else @click="showDialogTinymecVisible(scope.row,scope.row.articleId,'add')"></i>
-                                        <el-dialog  title="新增赞助商" :visible.sync="dialogTinymecVisible" :close-on-click-modal="!dialogTinymecVisible"
+                                        <el-dialog  title="新增文章" :visible.sync="dialogTinymecVisible" :close-on-click-modal="!dialogTinymecVisible"
                                                     center  @closed="HandleOnClose(scope.row)">
                                             <!--<editor  v-model='master_user.sel[v.field]' :init='init'></editor>-->
                                              <kind-editor :id="'editor_id'+scope.$index" height="500px" width="100%" :content.sync="master_user.sel[v.field]"
