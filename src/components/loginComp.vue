@@ -189,8 +189,6 @@
                                 }else{
                                     _this.ruleForm.password = ""
                                 }
-
-
                             }
                         })
                     } else {

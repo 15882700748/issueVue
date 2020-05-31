@@ -1,5 +1,5 @@
 <template>
-    <el-container style="box-shadow:0px 0px 20px 0 black;min-height:740px;position: relative">
+    <el-container style="box-shadow:0px 0px 20px 0 black;min-height:100vh;position: relative">
        <loading-comp v-if="loadingStatus" :text="loadingText"></loading-comp>
         <div v-else class="home" ref="imageWrapper">
             <draggable  v-model="homeData" ref="dragWrapper" @update="datadragEnd"  :animation = "500" style="position: relative">
@@ -409,7 +409,6 @@
                             target
                         this.articleType = typeInfo.articleType
                         this.articleTypeIndex = this.articleTypeSelect.indexOf(this.articleType)
-                        console.log(typeInfo)
                         _this.homeData[layout.indexOf('首页')].name = '首页'
                         _this.homeData[layout.indexOf('栏目')].name = '栏目'
                         _this.homeData[layout.indexOf('')].name = ''
@@ -492,18 +491,60 @@
                             "issueId": 1
                         }
                     column.name = '文章'
-                    column.content = data.articles
-                    data.columns.push(column)
-                    _this.styleId = data.style.styleId
-                    for(let i=0; i< _this.homeData.length; i++){
-                        if(_this.homeData[i].name === '首页'){
-                            _this.homeData[i].item = data.issue
-                        }else if(_this.homeData[i].name === '栏目'){
-                            _this.homeData[i].item = data.columns
-                        }else{
-                            _this.homeData[i].item = null
+                    console.log(data)
+                    if(data.issue  === null) {
+                        _this.$confirm('你还没有会议, 去添加会议内容。', '提示', {
+                            confirmButtonText: '确定',
+                            showCancelButton: false,
+                            type: 'warning'
+                        }).then(() => {
+                            _this.$router.push('/issueManage')
+                        }).catch(() => {
+                        });
+
+                    }else {
+                        console.log(data.columns.length,data.articles.length )
+                        if(data.columns.length === 0 ) {
+                            _this.$confirm('还没有栏目, 请添加栏目。', '提示', {
+                                confirmButtonText: '确定',
+                                showCancelButton: false,
+                                type: 'warning'
+                            }).then(() => {
+                                window.sessionStorage.setItem("issueId",data.issue.issueId);
+                                window.sessionStorage.setItem("issueTitle",data.issue.title);
+                                _this.$router.push('/columManage')
+                            }).catch(() => {
+                            });
+                        }else if( data.articles.length === 0) {
+                            _this.$confirm('还没有文章, 请添加文章。', '提示', {
+                                confirmButtonText: '确定',
+                                showCancelButton: false,
+                                type: 'warning'
+                            }).then(() => {
+                                window.sessionStorage.setItem("issueId",data.issue.issueId);
+                                window.sessionStorage.setItem("issueTitle",data.issue.title);
+                                _this.$router.push('/ArticleManage')
+                            }).catch(() => {
+                            });
+                        }else {
+                            column.content = data.articles
+                            data.columns.push(column)
+                            _this.styleId = data.style.styleId
+                            for(let i=0; i< _this.homeData.length; i++){
+                                if(_this.homeData[i].name === '首页'){
+                                    _this.homeData[i].item = data.issue
+                                }else if(_this.homeData[i].name === '栏目'){
+                                    _this.homeData[i].item = data.columns
+                                }else{
+                                    _this.homeData[i].item = null
+                                }
+                            }
                         }
+
+
                     }
+
+
                 })
             },
             set(val){
@@ -603,6 +644,7 @@
         created(){
             this.getStyle()
             this.page()
+
         }
     }
 </script>

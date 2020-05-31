@@ -1,5 +1,5 @@
 <template>
-    <el-container style="box-shadow:0px 0px 20px 0 black;height: auto">
+    <el-container style="box-shadow:0px 0px 20px 0 black;min-height:90vh">
         <el-header style="background-color:#545c64;color: #fff; margin-bottom: 40px">
             <el-row>
                 <el-col :span="15">
@@ -30,7 +30,7 @@
         </el-header>
         <el-mian>
             <div>
-                <el-table size="mini" :data="issueData.data" border style="width: 90%;margin: 0 auto;height: 440px" highlight-current-row ref="articleTable" tooltip-effect="dark"
+                <el-table size="mini" :data="issueData.data" border style="width: 90%;margin: 0 auto;height: 80%" highlight-current-row ref="articleTable" tooltip-effect="dark"
                           @selection-change=" handleIssueSelectionChange">
                     <el-table-column type="index"></el-table-column>
                     <el-table-column
@@ -215,7 +215,6 @@
                         </el-drawer>
                     </div>
                 </el-table>
-
             </div>
             <el-pagination
                     background
@@ -604,20 +603,46 @@
                         }else{
                             _this.addIssueForm.logo = _this.tempPath.substr(6)
                         }
-                        console.log( _this.addIssueForm.logo)
                         this.addIssueForm.location = JSON.stringify(this.location)
                         axios.post('/issue/addIssue',_this.addIssueForm).then(function (resp) {
                             if(resp.data.code === "200"){
                                 _this.dialogIssueFormVisible = false
-                                let curPage = _this.currentPage
-                                if(_this.currentPage === _this.totalPage && _this.issueData.data.length === _this.pageSize){
-                                    curPage += 1;
-                                }
-                                _this.page(curPage)
                                 _this.$message({
                                     message:resp.data.msg,
                                     type:'success'
                                 })
+
+                                if(resp.data.columns.length === 0 ) {
+                                    _this.$confirm('还没有栏目, 请添加栏目。', '提示', {
+                                        confirmButtonText: '确定',
+                                        showCancelButton: false,
+                                        type: 'warning'
+                                    }).then(() => {
+                                        window.sessionStorage.setItem("issueId",data.issue.issueId);
+                                        window.sessionStorage.setItem("issueTitle",data.issue.title);
+                                        _this.$router.push('/columManage')
+                                    }).catch(() => {
+                                    });
+                                }else if( resp.data.articles.length === 0) {
+                                    _this.$confirm('还没有文章, 请添加文章。', '提示', {
+                                        confirmButtonText: '确定',
+                                        showCancelButton: false,
+                                        type: 'warning'
+                                    }).then(() => {
+                                        window.sessionStorage.setItem("issueId",data.issue.issueId);
+                                        window.sessionStorage.setItem("issueTitle",data.issue.title);
+                                        _this.$router.push('/ArticleManage')
+                                    }).catch(() => {
+                                    });
+                                }else{
+                                    let curPage = _this.currentPage
+                                    if(_this.currentPage === _this.totalPage && _this.issueData.data.length === _this.pageSize){
+                                        curPage += 1;
+                                    }
+                                    _this.page(curPage)
+                                }
+
+
                             }else{
                                 _this.$message({
                                     message:resp.data.msg,

@@ -1,5 +1,5 @@
 <template>
-    <el-container style="box-shadow:0px 0px 20px 0 black;height: 600px">
+    <el-container style="box-shadow:0px 0px 20px 0 black;min-height:90vh">
         <el-header style="background-color:#545c64;color: #fff;">
             <el-row style="position: relative;top: 10px;min-width: 300px;text-align: center">
                 <el-col :span="24" style="max-width: 300px">
@@ -28,11 +28,12 @@
         </el-header>
         <el-main>
             <div v-if="tableData" style="width: 100%;height: 440px;position: relative;top: 80px">
-                <SponInfoCardComp  v-for="item in tableData " :ruleForm="ruleForm" :isLast="isLast" :data="item" :currentPage="currentPage" :allItem="tableData" @newAllItem="getNewAllItem">
-                </SponInfoCardComp>
-                <div class="addInfo" v-if="isLast">
+                <div class="addInfo" v-if="isLast" style="border-radius: 10px; border:1px #8C939D solid;margin-right: 20px">
                     <i id="addIcon" class="el-icon-plus avatar-uploader-icon" @click="showDialog"></i>
                 </div>
+                <SponInfoCardComp  v-for="item in tableData " :ruleForm="ruleForm" :isLast="isLast" :data="item" :currentPage="currentPage" :allItem="tableData" @newAllItem="getNewAllItem">
+                </SponInfoCardComp>
+
                 <el-pagination
                         background
                         layout="prev, pager, next"
@@ -114,7 +115,7 @@
                     // logoUrl:[{required: true, message: '选择图标', trigger: 'onSubmit'}]
                 },
                 autoUpload:false,
-                isLast:false,
+                isLast:true,
                 uploadSuccess:true,
                 tempPath:'sponIcon/16christine-zhu-1460573-unsplash.jpg',
                 uploadFIleName:'',
@@ -141,7 +142,6 @@
                     _this.pageSize =resp.data.size
                     _this.total = resp.data.total
                     _this.currentPage = resp.data.current
-                    _this.isLastPage(pageSize,resp.data.current,resp.data.pages,_this.tableData.length)
                 })
             },
             handleClick(row) {

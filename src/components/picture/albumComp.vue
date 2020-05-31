@@ -2,26 +2,12 @@
     <el-container >
         <el-main style="width: 100%;height: 500px;overflow-y:scroll">
             <el-row>
-                <el-col>
-                    <div class="addImg">
-                        <i class="el-icon-plus" @click="showAlbumDialogForm"></i>
-                        <el-dialog title="新增相册" :visible.sync="albumDialogFormVisible" :close-on-click-modal="!albumDialogFormVisible"
-                                   width="30%" center  @closed="addAlbumHandleOnClose('addAlbumForm')" >
-                            <el-form :model="addAlbumForm" :rules="addAlbumFormRule" ref="addAlbumForm">
-                                <el-form-item label="" prop="albumName">
-                                    <el-input v-model="addAlbumForm.albumName" autocomplete="off" placeholder="相册名"></el-input>
-                                </el-form-item>
-                                <el-form-item label="" prop="albumDesc">
-                                    <el-input v-model="addAlbumForm.albumDesc" autocomplete="off" placeholder="描述"></el-input>
-                                </el-form-item>
-                            </el-form>
-                            <div slot="footer" class="dialog-footer">
-                                <el-button @click="albumDialogFormVisible = false">取 消</el-button>
-                                <el-button type="primary" @click="submitAddAlbumForm('addAlbumForm')">确 定</el-button>
-                            </div>
-                        </el-dialog>
+                <el-col style="position: relative">
+                    <div class="addInfo"  style="border-radius: 10px; border:1px #8C939D solid;margin-right: 20px">
+                        <i id="addIcon" class="el-icon-plus avatar-uploader-icon" @click="showAlbumDialogForm"></i>
                     </div>
                     <div class="infinite-list-wrapper" style="overflow-y:auto">
+
                         <div
                                 class="wrapper"
                                 v-for="(item,index) in albums"
@@ -32,26 +18,47 @@
                                 <span class="albumDesc">描述：{{item.albumDesc}}</span>
                                 <span class="albumDelete"><i class="el-icon-circle-close" @click="deleteAlbum(item.albumId)"></i></span>
                                 <span class="albumEdit"><i class="el-icon-edit-outline" @click="editAlbum(item.albumId,item.albumName,item.albumDesc)"></i></span>
-                                <el-dialog title="修改相册" :visible.sync="updateAlbumDialogFormVisible" :close-on-click-modal="!updateAlbumDialogFormVisible"
-                                           width="30%" center  @closed="addAlbumHandleOnClose('updateAlbumForm'+index)" >
-                                    <el-form :model="updateAlbumForm" :rules="updateAlbumFormRule" :ref="'updateAlbumForm'+index">
-                                        <el-form-item label="" prop="albumName">
-                                            <el-input v-model="updateAlbumForm.albumName" autocomplete="off" placeholder="相册名"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="" prop="albumDesc">
-                                            <el-input v-model="updateAlbumForm.albumDesc" autocomplete="off" placeholder="描述"></el-input>
-                                        </el-form-item>
-                                    </el-form>
-                                    <div slot="footer" class="dialog-footer">
-                                        <el-button @click="updateAlbumDialogFormVisible = false">取 消</el-button>
-                                        <el-button type="primary" @click="submitUpdateAlbumForm('updateAlbumForm'+index)">确 定</el-button>
-                                    </div>
-                                </el-dialog>
                             </div>
                         </div>
                         <p v-if="loading">加载中...</p>
                         <p v-if="noMore">没有更多了</p>
                     </div>
+                    <el-dialog title="新增相册" :visible.sync="albumDialogFormVisible" :close-on-click-modal="!albumDialogFormVisible"
+                               width="30%" center  @closed="addAlbumHandleOnClose('addAlbumForm')" >
+                        <el-form :model="addAlbumForm" :rules="addAlbumFormRule" ref="addAlbumForm">
+                            <el-form-item label="" prop="albumName">
+                                <el-input v-model="addAlbumForm.albumName" autocomplete="off" placeholder="相册名"></el-input>
+                            </el-form-item>
+                            <el-form-item label="" prop="albumDesc">
+                                <el-input v-model="addAlbumForm.albumDesc" autocomplete="off" placeholder="描述"></el-input>
+                            </el-form-item>
+                        </el-form>
+                        <div slot="footer" class="dialog-footer">
+                            <el-button @click="albumDialogFormVisible = false">取 消</el-button>
+                            <el-button type="primary" @click="submitAddAlbumForm('addAlbumForm')">确 定</el-button>
+                        </div>
+                    </el-dialog>
+
+                    <el-dialog title="修改相册" :visible.sync="updateAlbumDialogFormVisible" :close-on-click-modal="!updateAlbumDialogFormVisible"
+                               width="30%" center  @closed="addAlbumHandleOnClose('updateAlbumForm'+index)" >
+                        <el-form :model="updateAlbumForm" :rules="updateAlbumFormRule" :ref="'updateAlbumForm'+index">
+                            <el-form-item label="" prop="albumName">
+                                <el-input v-model="updateAlbumForm.albumName" autocomplete="off" placeholder="相册名"></el-input>
+                            </el-form-item>
+                            <el-form-item label="" prop="albumDesc">
+                                <el-input v-model="updateAlbumForm.albumDesc" autocomplete="off" placeholder="描述"></el-input>
+                            </el-form-item>
+                        </el-form>
+                        <div slot="footer" class="dialog-footer">
+                            <el-button @click="updateAlbumDialogFormVisible = false">取 消</el-button>
+                            <el-button type="primary" @click="submitUpdateAlbumForm('updateAlbumForm'+index)">确 定</el-button>
+                        </div>
+                    </el-dialog>
+                </el-col>
+            </el-row>
+            <el-row>
+                <el-col>
+
                 </el-col>
             </el-row>
 
@@ -245,6 +252,26 @@
 </script>
 
 <style scoped>
+    .addInfo{
+        display: inline-flex;
+        width: 100px;
+        height: 100px;
+        background-color: #fff;
+        /*border: 2px solid #000;*/
+        border-radius: 6px;
+        color: #000;
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+    #addIcon{
+        position: relative;
+        width: 50px;
+        height: 50px;
+        left: 50%;
+        top: 60%;
+        transform: translate(-50%,-60%);
+    }
     .addImg{
         border: black 1px solid;
         display: inline-flex;

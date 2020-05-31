@@ -31,7 +31,11 @@
                         </el-dialog>
                     </div>
                     <div class="profile-card__txt">
-                        <strong>描述：</strong>{{info.orgDesc}}<i class="el-icon-edit " @click="updateOrg('orgDesc',info.orgDesc)"></i>
+                        <div style="display: flex">
+                            <div><strong>描述：</strong></div>
+                            <div style="max-width:380px;line-height: 26px; overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{info.orgDesc}}</div>
+                            <div><i class="el-icon-edit " @click="updateOrg('orgDesc',info.orgDesc)"></i></div>
+                        </div>
                     </div>
                     <div class="profile-card-inf">
                         <div class="profile-card-inf__item">
@@ -236,8 +240,15 @@
     .profile-card__txt {
         font-size: 18px;
         font-weight: 500;
+        width: 460px;
         color: #324e63;
         margin-bottom: 15px;
+        position: relative;
+        display: flex;
+        align-items: center;
+        align-content: center;
+        justify-content: center;
+
     }
     .profile-card__txt strong {
         font-weight: 700;

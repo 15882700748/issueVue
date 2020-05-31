@@ -1,5 +1,5 @@
 <template>
-    <el-container style="box-shadow:0px 0px 20px 0 black;height: 100hv">
+    <el-container style="box-shadow:0px 0px 20px 0 black;min-height:90vh">
         <el-header style="background-color:#545c64;color: #fff; margin-bottom: 40px">
             <el-row>
                 <el-col :span="1" >
@@ -33,7 +33,7 @@
         </el-header>
         <el-mian>
             <div>
-                <el-table align="center" size="mini" :data="master_user.data" border style="width: 90%;margin: 0 auto;height: 440px" highlight-current-row ref="articleTable" tooltip-effect="dark"
+                <el-table align="center" size="mini" :data="master_user.data" border style="width: 90%;margin: 0 auto;height: 80%" highlight-current-row ref="articleTable" tooltip-effect="dark"
                           @selection-change="handleSelectionChange">
                     <el-table-column type="index"></el-table-column>
                     <el-table-column
